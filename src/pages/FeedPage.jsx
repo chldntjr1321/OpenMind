@@ -139,6 +139,7 @@ const IconBtn = styled.button`
   }
 `;
 const QuestionBox = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -280,7 +281,15 @@ const PostBtn = styled.div`
   font-size: 20px;
   font-weight: 400;
   line-height: 25px;
-  text-align: center;
+`;
+const DeleteBtn = styled(PostBtn)`
+  position: absolute;
+  top: -44px;
+  bottom: auto;
+  right: 0;
+  width: 100px;
+  height: 35px;
+  font-size: 15px;
 `;
 
 function FeedPage() {
@@ -333,6 +342,9 @@ function FeedPage() {
           <QuestionCards isEmpty={isEmpty} />
           <QuestionCards isEmpty={isEmpty} />
           <QuestionCards isEmpty={isEmpty} />
+          {isEmpty ? null : (
+            <DeleteBtn onClick={handleOnClick}>삭제하기</DeleteBtn>
+          )}
         </QuestionBox>
         <PostBtn onClick={handleOnClick}>질문 작성하기</PostBtn>
       </Wrapper>
