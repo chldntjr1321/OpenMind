@@ -1,13 +1,16 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import BannerImg from '../assets/banner.png';
-import ProfileImg from '../assets/profile.png';
-import LogoImg from '../assets/logo.png';
-import CopyLinkIcon from '../assets/linkcopy.png';
-import KaKaoIcon from '../assets/kakaoicon.png';
-import FacebookIcon from '../assets/facebookicon.png';
+import BannerImg from '../assets/banner.svg';
+import ProfileImg from '../assets/profile.svg';
+import LogoImg from '../assets/logo.svg';
+import CopyLinkIcon from '../assets/link.svg';
+import KaKaoIcon from '../assets/kakao.svg';
+import FacebookIcon from '../assets/facebook.svg';
+import MessageIcon from '../assets/message.svg';
+import EmptyIcon from '../assets/empty.svg';
 
 const GlobalStyle = createGlobalStyle`
   * {
+    font-family: 'Actor','Pretendard', sans-serif;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -19,6 +22,8 @@ const GlobalStyle = createGlobalStyle`
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
 
 const Banner = styled.div`
@@ -54,6 +59,7 @@ const ProfileWrapper = styled.div`
 
 const Profile = styled.img`
   width: 136px;
+  height: 136px;
 `;
 const Nickname = styled.p`
   font-size: 32px;
@@ -82,6 +88,60 @@ const IconBtn = styled.button`
     object-fit: contain;
   }
 `;
+const QuestionBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f1ee;
+  border: 1px solid #e4d5c9;
+  border-radius: 16px;
+  width: 716px;
+  height: 330px;
+  margin-top: 189px;
+
+  div {
+    width: 207px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  p {
+    color: #542f1a;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+  img {
+    width: 150px;
+    margin-top: 70px;
+    align-self: top;
+  }
+  div .message__icon {
+    width: 24px;
+    margin-top: 0;
+  }
+`;
+const PostBtn = styled.div`
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: 208px;
+  height: 54px;
+  background-color: #542f1a;
+  border-radius: 27px;
+  box-shadow: 0px 4px 4px 0px #00000040;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 25px;
+  text-align: center;
+`;
 
 function FeedPage() {
   return (
@@ -106,6 +166,18 @@ function FeedPage() {
             </IconBox>
           </ProfileWrapper>
         </Banner>
+        <QuestionBox>
+          <div>
+            <img
+              src={MessageIcon}
+              className="message__icon"
+              alt="메세지 아이콘"
+            />
+            <p>아직 질문이 없습니다</p>
+          </div>
+          <img src={EmptyIcon} alt="빈 서랍장 아이콘" />
+        </QuestionBox>
+        <PostBtn>질문 작성하기</PostBtn>
       </Wrapper>
     </>
   );
