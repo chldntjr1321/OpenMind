@@ -10,6 +10,7 @@ import MessageIcon from '../assets/message.svg';
 import EmptyIcon from '../assets/empty.svg';
 import LikeIcon from '../assets/thumbs-up.svg';
 import DislikeIcon from '../assets/thumbs-down.svg';
+import MoreIcon from '../assets/more.svg';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -132,7 +133,7 @@ const IconBtn = styled.button`
   border: none;
   cursor: pointer;
 
-  & img {
+  & > img {
     width: 40px;
     height: 40px;
     object-fit: contain;
@@ -164,15 +165,13 @@ const QuestionBox = styled.div`
     font-weight: 400;
     line-height: 25px;
   }
-  & img {
+  & > img {
     width: 150px;
     margin-top: 54px;
     margin-bottom: 65px;
   }
-  & .message__icon {
+  & > .message__icon {
     width: 24px;
-    margin-top: 0;
-    margin-bottom: 0;
   }
 `;
 const Card = styled.div`
@@ -185,6 +184,14 @@ const Card = styled.div`
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0px 4px 4px 0px #00000040;
+  & > .answer__box {
+    display: flex;
+    justify-content: space-between;
+  }
+  & > .answer__box > img {
+    width: 26px;
+    cursor: pointer;
+  }
 `;
 const AnswerEnd = styled.div`
   display: flex;
@@ -200,20 +207,9 @@ const AnswerEnd = styled.div`
   font-weight: 500;
   line-height: 18px;
 `;
-const AnswerYet = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  height: 26px;
-  background-color: #ffffff;
+const AnswerYet = styled(AnswerEnd)`
   border: 1px solid #818181;
-  border-radius: 10px;
-  padding: 4px 12px;
   color: #818181;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18px;
 `;
 const Question = styled.div`
   display: flex;
@@ -223,17 +219,54 @@ const Question = styled.div`
   height: fit-content;
   gap: 4px;
 
-  .question__date {
+  & > .question__date {
     color: #818181;
     font-size: 14px;
     font-weight: 500;
     line-height: 18px;
   }
-  .question__text {
+  & > .question__text {
     color: #000000;
     font-size: 18px;
     font-weight: 400;
     line-height: 24px;
+  }
+`;
+const AnswerBox = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 32px;
+  gap: 12px;
+
+  & > div {
+    width: 100%;
+  }
+  & > img {
+    width: 48px;
+  }
+  & > div > p {
+    color: #000000;
+    font-size: 18px;
+  }
+  & > div > textarea {
+    resize: none;
+    border: none;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: 168px;
+    overflow: auto;
+    padding: 16px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    outline: none;
+  }
+  & > div > textarea:focus {
+    border: 1px solid #542f1a;
   }
 `;
 const ReactionBtns = styled.div`
@@ -243,12 +276,12 @@ const ReactionBtns = styled.div`
   margin-top: 32px;
   padding-top: 25px;
 
-  div {
+  & > div {
     display: flex;
     justify-content: center;
     gap: 6px;
   }
-  p {
+  & > div > p {
     color: #818181;
     font-size: 14px;
     font-weight: 500;
@@ -256,10 +289,9 @@ const ReactionBtns = styled.div`
     text-align: center;
   }
 
-  & img {
+  & > div > img {
     width: 16px;
     margin-top: 0;
-    margin-bottom: 0;
     cursor: pointer;
   }
 `;
@@ -290,6 +322,20 @@ const DeleteBtn = styled(PostBtn)`
   width: 100px;
   height: 35px;
   font-size: 15px;
+`;
+const AnswerBtn = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 46px;
+  background-color: #542f1a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  cursor: pointer;
 `;
 
 function FeedPage() {
@@ -359,15 +405,26 @@ function QuestionCards({ isEmpty }) {
   return (
     <div className={isEmpty ? 'hidden' : null}>
       <Card>
-        {isAnswered ? (
-          <AnswerEnd>답변 완료</AnswerEnd>
-        ) : (
-          <AnswerYet>미답변</AnswerYet>
-        )}
+        <div className="answer__box">
+          {isAnswered ? (
+            <AnswerEnd>답변 완료</AnswerEnd>
+          ) : (
+            <AnswerYet>미답변</AnswerYet>
+          )}
+          <img src={MoreIcon} alt="더보기 아이콘" />
+        </div>
         <Question>
           <p className="question__date">질문 · 2주전</p>
           <p className="question__text">좋아하는 동물은??</p>
         </Question>
+        <AnswerBox>
+          <img src={ProfileImg} alt="프로필 이미지" />
+          <div>
+            <p>아초는고양이</p>
+            <textarea placeholder="답변을 입력해주세요" />
+            <AnswerBtn>답변 완료</AnswerBtn>
+          </div>
+        </AnswerBox>
         <ReactionBtns>
           <div>
             <img src={LikeIcon} alt="좋아요 아이콘" />
