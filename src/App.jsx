@@ -1,6 +1,7 @@
 import Badge from './components/Badge/Badge.jsx';
 import GlobalStyle from './components/GlobalStyle';
 import Reaction from './components/Reaction/Reaction.jsx';
+import UserCard from './components/UserCard/UserCard.jsx';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <p>이곳은 메인 화면입니다.</p>
       <Reaction />
       <Badge />
+      <UserCard />
     </>
   );
 }
