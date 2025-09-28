@@ -3,7 +3,6 @@ import DefaultEditIcon from '../../assets/edit(gray).svg';
 import HoverEditIcon from '../../assets/edit(black).svg';
 import ActiveEditIcon from '../../assets/edit(blue).svg';
 import DeleteIcon from '../../assets/icon_x.svg';
-import { useState } from 'react';
 
 const OptionBox = styled.div`
   width: fit-content;

@@ -5,6 +5,7 @@ import GlobalStyle from './components/GlobalStyle';
 import Reaction from './components/Reaction/Reaction.jsx';
 import UserCard from './components/UserCard/UserCard.jsx';
 import Toast from './components/Toast/Toast.jsx';
+import Pagenation from './components/Pagenation/Pagenation.jsx';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <UserCard />
       <Dropdown />
       <Edit />
+      <Pagenation />
     </>
   );
 }
