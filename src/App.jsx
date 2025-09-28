@@ -1,4 +1,5 @@
 import Badge from './components/Badge/Badge.jsx';
+import Dropdown from './components/Dropdown/Dropdown.jsx';
 import GlobalStyle from './components/GlobalStyle';
 import Reaction from './components/Reaction/Reaction.jsx';
 import UserCard from './components/UserCard/UserCard.jsx';
@@ -11,6 +12,7 @@ function App() {
       <Reaction />
       <Badge />
       <UserCard />
+      <Dropdown />
     </>
   );
 }
