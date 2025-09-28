@@ -3,7 +3,6 @@ import InActiveLike from '../../assets/thumbs-up.svg';
 import ActiveLike from '../../assets/thumbs-up-active.svg';
 import InActiveDisLike from '../../assets/thumbs-down.svg';
 import ActiveDisLike from '../../assets/thumbs-down-active.svg';
-import { useState } from 'react';
 
 const IconBox = styled.div`
   border-top: 1px solid #cfcfcf;
@@ -38,28 +37,25 @@ const Like = styled.div`
 `;
 const DisLike = styled(Like)``;
 
-export default function Reaction() {
-  const [likeCount, setLikeCount] = useState(0);
-  const [isDisLike, setIsDisLike] = useState(false);
-
+export default function Reaction({ likeCount, isDisLike, onLike, onDislike }) {
   return (
     <>
       <IconBox>
         <Like>
           <img
-            src={likeCount !== 0 ? ActiveLike : InActiveLike}
+            src={likeCount > 0 ? ActiveLike : InActiveLike}
             alt="좋아요 버튼"
-            onClick={() => setLikeCount(likeCount + 1)}
+            onClick={onLike}
           />
-          <p className={likeCount !== 0 ? 'active--like' : null}>
-            좋아요 {likeCount !== 0 ? likeCount : null}
+          <p className={likeCount > 0 ? 'active--like' : null}>
+            {likeCount > 0 ? `좋아요 ${likeCount}` : `좋아요`}
           </p>
         </Like>
         <DisLike>
           <img
             src={isDisLike ? ActiveDisLike : InActiveDisLike}
             alt="싫어요 버튼"
-            onClick={() => setIsDisLike(!isDisLike)}
+            onClick={onDislike}
           />
           <p className={isDisLike ? 'active--dislike' : null}>싫어요</p>
         </DisLike>
