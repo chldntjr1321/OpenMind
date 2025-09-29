@@ -1,13 +1,28 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openmind</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenMind</title>
+    <link rel="stylesheet" href="/src/assets/css/common.css">
+    <link rel="stylesheet" href="/src/assets/css/main.css">
+</head>
+<body>
+    <header>
+        <button class="btn-go-to-ask">질문하러 가기</button>
+    </header>
+
+    <main class="main-container">
+        <div class="main-logo">
+            <img src="/src/assets/image/logo.svg" alt="OpenMind 로고">
+        </div>
+        <form class="main-wrap">
+            <input type="text" class="main-input" placeholder="이름을 입력하세요">
+            <button type="submit" class="btn-receive-questions">질문 받기</button>
+        </form>
+    </main>
+    <div class="main-illustration">
+        <img src="/src/assets/image/v872batch5-nunny-04 1.png" alt="배너 일러스트">
+    </div>
+</body>
 </html>
