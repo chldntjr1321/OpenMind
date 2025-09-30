@@ -7,7 +7,7 @@ import UserCard from './components/UserCard/UserCard.jsx';
 import Toast from './components/Toast/Toast.jsx';
 import Pagenation from './components/Pagenation/Pagenation.jsx';
 import './App.css';
-import Modal from './pages/Modal'
+import FloatingBtn from './components/FloatingBtn/FloatingBtn.jsx';
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
       <Dropdown />
       <Edit />
       <Pagenation />
+      <FloatingBtn />
     </>
   );
 }
