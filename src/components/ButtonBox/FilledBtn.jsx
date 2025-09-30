@@ -14,7 +14,7 @@ const FillButtonBox = styled.button`
   padding: 12px 24px;
   margin-top: 8px;
   text-align: center;
-  border: 2px solid transparent;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
@@ -22,7 +22,7 @@ const FillButtonBox = styled.button`
     width: 18px;
   }
   &:hover {
-    border-color: #341909;
+    border: 2px solid #341909;
   }
   &:active {
     background-color: #341909;
@@ -30,7 +30,6 @@ const FillButtonBox = styled.button`
   &:disabled {
     background-color: #c7bbb5;
     cursor: not-allowed;
-    border-color: transparent;
   }
 `;
 
