@@ -6,14 +6,18 @@ import Reaction from './components/Reaction/Reaction.jsx';
 import UserCard from './components/UserCard/UserCard.jsx';
 import Toast from './components/Toast/Toast.jsx';
 import Pagenation from './components/Pagenation/Pagenation.jsx';
-import './App.css';
-import Modal from './pages/Modal'
+import FilledBtn from './components/ButtonBox/FilledBtn.jsx';
+import OutlineBtn from './components/ButtonBox/OutlineBtn.jsx';
+import InputTextArea from './components/InputTextArea/InputTextArea.jsx';
+import InputField from './components/InputField/InputField.jsx';
 
 function App() {
   return (
     <>
       <GlobalStyle />
       <p>이곳은 메인 화면입니다.</p>
+      <InputTextArea />
+      <InputField />
       <Toast />
       <Reaction />
       <Badge />
@@ -21,6 +25,8 @@ function App() {
       <Dropdown />
       <Edit />
       <Pagenation />
+      <FilledBtn />
+      <OutlineBtn />
     </>
   );
 }
