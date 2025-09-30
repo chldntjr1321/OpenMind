@@ -33,10 +33,13 @@ const FillButtonBox = styled.button`
   }
 `;
 
-export default function FilledBtn() {
+export default function FilledBtn({ btnText, isDisabled }) {
   return (
     <>
-      <FillButtonBox>질문 받기</FillButtonBox>
+      <FillButtonBox disabled={isDisabled}>
+        {btnText}
+        <img src={RightArrow} alt="오른쪽 화살표" />
+      </FillButtonBox>
     </>
   );
 }

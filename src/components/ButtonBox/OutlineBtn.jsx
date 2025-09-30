@@ -36,11 +36,11 @@ const OutlineButtonBox = styled.button`
   }
 `;
 
-export default function OutlineBtn({ isDisabled }) {
+export default function OutlineBtn({ btnText, isDisabled }) {
   return (
     <>
       <OutlineButtonBox disabled={isDisabled}>
-        답변하러 가기
+        {btnText}
         <img src={isDisabled ? DisableArrow : RightArrow} alt="오른쪽 화살표" />
       </OutlineButtonBox>
     </>
