@@ -10,11 +10,11 @@ const TextArea = styled.textarea`
   line-height: 22px;
   letter-spacing: 0px;
   border: none;
-  border-radius: 16px;
+  border-radius: 8px;
   box-sizing: border-box;
   width: 100%;
   min-height: 180px;
-  padding: 16px 8px 8px 16px;
+  padding: 16px;
   resize: none;
   &:focus {
     outline: 1px solid #542F1A;
