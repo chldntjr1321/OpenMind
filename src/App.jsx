@@ -18,17 +18,7 @@ function App() {
     <>
       <GlobalStyle />
       <p>이곳은 메인 화면입니다.</p>
-      <InputTextArea />
-      <InputField />
-      <Toast />
-      <Reaction />
-      <Badge />
-      <UserCard />
-      <Dropdown />
-      <Edit />
-      <Pagenation />
-      <FilledBtn />
-      <OutlineBtn />
+
       <FloatingBtn />
       <AnswerCard />
     </>
