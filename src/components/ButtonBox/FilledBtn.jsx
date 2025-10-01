@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import RightArrow from '../../assets/arrow-right(white).svg';
 
-const FillButtonBox = styled.button`
+const FillButtonBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,8 +27,9 @@ const FillButtonBox = styled.button`
   &:active {
     background-color: #341909;
   }
-  &:disabled {
+  &.disabled {
     background-color: #c7bbb5;
+    border: none;
     cursor: not-allowed;
   }
 `;
@@ -36,7 +37,7 @@ const FillButtonBox = styled.button`
 export default function FilledBtn({ btnText, isDisabled }) {
   return (
     <>
-      <FillButtonBox disabled={isDisabled}>
+      <FillButtonBox className={isDisabled ? 'disabled' : ''}>
         {btnText}
         <img src={RightArrow} alt="오른쪽 화살표" />
       </FillButtonBox>

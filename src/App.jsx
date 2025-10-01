@@ -11,6 +11,7 @@ import OutlineBtn from './components/ButtonBox/OutlineBtn.jsx';
 import InputTextArea from './components/InputTextArea/InputTextArea.jsx';
 import InputField from './components/InputField/InputField.jsx';
 import FloatingBtn from './components/FloatingBtn/FloatingBtn.jsx';
+import AnswerCard from './components/FeedCard/AnswerCard.jsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
       <FilledBtn />
       <OutlineBtn />
       <FloatingBtn />
+      <AnswerCard />
     </>
   );
 }
