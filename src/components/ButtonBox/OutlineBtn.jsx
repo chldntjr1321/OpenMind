@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import RightArrow from '../../assets/arrow-right(brown).svg';
 import DisableArrow from '../../assets/arrow-right(disabled).svg';
 
-const OutlineButtonBox = styled.button`
+const OutlineButtonBox = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   background-color: #f5f1ee;
@@ -28,7 +28,7 @@ const OutlineButtonBox = styled.button`
   &:active {
     background-color: #e4d5c9;
   }
-  &:disabled {
+  &.disabled {
     background-color: #f5f1ee;
     color: #c7bbb5;
     border: 1px solid #c7bbb5;
@@ -39,7 +39,7 @@ const OutlineButtonBox = styled.button`
 export default function OutlineBtn({ btnText, isDisabled }) {
   return (
     <>
-      <OutlineButtonBox disabled={isDisabled}>
+      <OutlineButtonBox className={isDisabled ? 'disabled' : ''}>
         {btnText}
         <img src={isDisabled ? DisableArrow : RightArrow} alt="오른쪽 화살표" />
       </OutlineButtonBox>

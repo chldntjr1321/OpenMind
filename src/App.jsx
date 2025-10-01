@@ -11,24 +11,16 @@ import OutlineBtn from './components/ButtonBox/OutlineBtn.jsx';
 import InputTextArea from './components/InputTextArea/InputTextArea.jsx';
 import InputField from './components/InputField/InputField.jsx';
 import FloatingBtn from './components/FloatingBtn/FloatingBtn.jsx';
+import AnswerCard from './components/FeedCard/AnswerCard.jsx';
 
 function App() {
   return (
     <>
       <GlobalStyle />
       <p>이곳은 메인 화면입니다.</p>
-      <InputTextArea />
-      <InputField />
-      <Toast />
-      <Reaction />
-      <Badge />
-      <UserCard />
-      <Dropdown />
-      <Edit />
-      <Pagenation />
-      <FilledBtn />
-      <OutlineBtn />
+
       <FloatingBtn />
+      <AnswerCard />
     </>
   );
 }
