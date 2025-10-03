@@ -26,6 +26,10 @@ const Logo = styled.div`
   background-color: pink;
   width: 170px;
   height: 67px;
+  @media (max-width: 375px) {
+    width: 124px;
+    height: 49px;
+  }
 `;
 const ProfileBox = styled.div`
   background-color: lightgray;
@@ -36,6 +40,11 @@ const ProfileBox = styled.div`
   gap: 12px;
   & img {
     width: 136px;
+  }
+  @media (max-width: 375px) {
+    & img {
+      width: 104px;
+    }
   }
 `;
 const IconBox = styled.div`
@@ -49,17 +58,20 @@ const IconBox = styled.div`
 `;
 const CardBox = styled.div`
   background-color: #f5f1ee;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
   max-width: 716px;
-  width: 100%;
   margin: 189px auto 140px auto;
   border: 1px solid #c7bbb5;
   border-radius: 16px;
   & > p {
     text-align: center;
+  }
+  @media (max-width: 375px) {
+    margin: 176px 24px 168px 24px;
   }
 `;
 const Card = styled.div`
@@ -68,6 +80,10 @@ const Card = styled.div`
   flex-direction: column;
   gap: 32px;
   padding: 32px;
+  @media (max-width: 375px) {
+    padding: 24px;
+    gap: 24px;
+  }
 `;
 const CardHeader = styled.div`
   display: flex;
@@ -87,6 +103,11 @@ const AnswerBox = styled.div`
   & img {
     width: 48px;
   }
+  @media (max-width: 375px) {
+    & img {
+      width: 32px;
+    }
+  }
 `;
 const Contents = styled.div`
   display: flex;
@@ -96,9 +117,9 @@ const Contents = styled.div`
 `;
 const TextArea = styled.div`
   background-color: peru;
-  height: 186px;
-  padding: 16px;
-  overflow-y: auto;
+  min-height: 186px;
+
+  word-break: break-all;
 `;
 const AnswerEndBtn = styled.div`
   background-color: lightskyblue;
@@ -114,6 +135,26 @@ const ReactionBtns = styled.div`
 `;
 const DeleteAllBtn = styled.div`
   background-color: burlywood;
+  position: absolute;
+  top: -9px;
+  right: 0;
+  transform: translateY(-100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 35px;
+  padding: 12px 24px;
+  border-radius: 200px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 25px;
+  @media (max-width: 375px) {
+    width: 70px;
+    height: 25px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
 `;
 
 export default function AnswerPage() {
@@ -149,7 +190,18 @@ export default function AnswerPage() {
             <img src={ProfileImg} alt="프로필 이미지" />
             <Contents>
               <div>유저 이름</div>
-              <TextArea>답변 입력란</TextArea>
+              <TextArea>
+                그들을 불러 귀는 이상의 오직 피고, 가슴이 이상, 못할 봄바람이다.
+                찾아다녀도, 전인 방황하였으며, 대한 바이며, 이것이야말로 가치를
+                청춘의 따뜻한 그리하였는가? 몸이 열락의 청춘의 때문이다. 천고에
+                피어나는 간에 밝은 이상, 인생의 만물은 피다. 대중을 이성은
+                방황하여도, 그리하였는가? 크고 평화스러운 품에 방황하였으며,
+                말이다. 이상은 들어 예수는 크고 긴지라 역사를 피다. 얼음에
+                있음으로써 꽃 보배를 곧 가는 교향악이다. 우는 새 예가 우리의
+                것은 피다. 피가 그것을 어디 앞이 기쁘며, 이상의 열락의 위하여서
+                끝까지 것이다. 있는 봄바람을 방황하여도, 우리의 것은 작고 아니한
+                영원히 듣기만 운다.
+              </TextArea>
               <AnswerEndBtn>답변 완료 버튼</AnswerEndBtn>
             </Contents>
           </AnswerBox>
