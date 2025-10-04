@@ -2,13 +2,14 @@ import styled from 'styled-components';
 
 const QuestionFeedBox = styled.div`
   background-color: #ffffff;
-  width: 620px;
+  max-width: 620px;
   min-width: 247px;
-  height: 46px;
+  min-height: 46px;
+  height: auto;
   gap: 12px;
-  padding: 2px;
+  padding: 0px 2px 2px;
 `;
-const QuestionDotDate = styled.div`
+const StyledQuestionDot = styled.div`
   color: #818181;
   height: 50%;
   font-family: Pretendard;
@@ -20,7 +21,6 @@ const QuestionDotDate = styled.div`
 `
 const StyledQuestion = styled.div`
   color: #000000;
-  height: 50%;
   font-family: Actor;
   font-weight: 400;
   font-style: Regular;
@@ -30,22 +30,32 @@ const StyledQuestion = styled.div`
 `;
 
 function QuestionDot() {
-  return ('질문 · ');
+  return (
+    '질문 · '
+  );
 }
 
 function UpdatedDate() {
-  return ('2주전');
+  return (
+    '2주전'
+  );
 }
 function Question() {
-  return (<div>좋아하는 동물은?</div>);
+  return (
+    '좋아하는 동물은?'
+  );
 }
 function QuestionFeedCard() {
   return (
     <>
       <QuestionFeedBox>
-        <QuestionDotDate />
-        <UpdatedDate />
-        <Question />
+        <StyledQuestionDot>
+          <QuestionDot />
+          <UpdatedDate />
+        </StyledQuestionDot>
+        <StyledQuestion>
+          <Question />
+        </StyledQuestion>
       </QuestionFeedBox>
     </>
   );
