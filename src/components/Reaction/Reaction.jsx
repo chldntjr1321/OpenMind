@@ -10,17 +10,16 @@ const IconBox = styled.div`
   align-items: center;
   justify-content: flex-start;
   gap: 32px;
-  margin: 32px;
 `;
 const Like = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
   padding-top: 24px;
+  cursor: pointer;
   & > img {
     width: 16px;
     height: 16px;
-    cursor: pointer;
   }
   & > p {
     margin: 0;
