@@ -82,7 +82,54 @@ const PostingBody = styled.div`
   align-items: center;
   padding: 54px 24px 166px;
 `;
-const PostingArea = styled.div`
+const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
+  background-color: #f5f1ee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 716px;
+  height: 330px;
+  border: 1px solid #e4d5c9;
+  border-radius: 16px;
+  padding: 16px 24px;
+  gap: 8px;
+  .emptyFeedText {
+    color: #542f1a;
+    display: inline-flex;
+    font-family: Actor;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 25px;
+    letter-spacing: 0px;
+    gap: 8px;
+    @media (max-width: 375px) {
+      font-size: 18px;
+      line-height: 24px;
+      letter-spacing: 0px;
+  }
+}
+@media (max-width: 375px) {
+  padding: 16px 24px;
+  gap: 8px;
+}
+`;
+const EmptyFeedImage = styled.div`
+  background-color: #999999;
+  position: absolute;
+  flex-direction: column;
+  top: calc(16px + 50%);
+  transform: translateY(-50%);
+  width: 150px;
+  height: 154px;
+  @media (max-width: 375px) {
+    top: 50%;
+    width: 114px;
+    height: 118px;
+  }
+`;
+const PostingArea = styled.div`   // 피드(질문)가 1개 이상인 경우
   background-color: #f5f1ee;
   display: flex;
   flex-direction: column;
@@ -228,11 +275,25 @@ const AnswerReaction = styled.div`
   width: 100%;
   height: 43px;
 `;
+const ToastArea = styled.div`
+  width: 167px;
+  height: 42px;
+  position: fixed;
+  bottom: 60px;
+  @media (max-width: 375px) {
+    bottom: 100px;
+  }
+`;
 const FloatingBtn = styled.div`
   width: 208px;
   height: 54px;
   position: fixed;
-  bottom: 40px;
+  right: 24px;
+  bottom: 24px;
+  @media (max-width: 375px) {
+    width: auto;
+    min-width: 123px;
+  }
 `;
 
 function PostingPage() {
@@ -250,7 +311,7 @@ function PostingPage() {
         </ProfileArea>
       </PostingHeader>
       <PostingBody>
-        <PostingArea>
+        {/* <PostingArea>
           <div className="questionCount">3개의 질문이 있습니다</div>
           <FeedCard>
             <FeedBadge />
@@ -278,7 +339,12 @@ function PostingPage() {
             </AnswerFeed>
             <AnswerReaction />
           </FeedCard>
-        </PostingArea>
+        </PostingArea> */}
+        <EmptyFeed>
+          <span className="emptyFeedText">아직 질문이 없습니다</span>
+          <EmptyFeedImage />
+        </EmptyFeed>
+        <ToastArea />
         <FloatingBtn />
       </PostingBody>
     </>
