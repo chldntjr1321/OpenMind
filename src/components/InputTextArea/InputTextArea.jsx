@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const inputContents = '질문'; // 내용, 질문, 답변 등 입력할 컨텐츠를 넣어주세요
+// const inputContents = '질문'; // 내용, 질문, 답변 등 입력할 컨텐츠를 넣어주세요
 const TextArea = styled.textarea`
   background-color: #f9f9f9;
   color: #818181;
@@ -31,8 +31,8 @@ function InputTextArea({ value, onChange }) {
     <>
       <div>
         <TextArea
-          placeholder={inputContents + '을 입력하세요'}
-          alt={inputContents + ' 입력란'}
+          placeholder={`질문을 입력하세요`}
+          alt={`질문 입력란`}
           value={value}
           onChange={onChange}
         />

@@ -39,7 +39,7 @@ export default function FilledBtn({ btnText, isDisabled }) {
     <>
       <FillButtonBox className={isDisabled ? 'disabled' : ''}>
         {btnText}
-        <img src={RightArrow} alt="오른쪽 화살표" />
+        {/* <img src={RightArrow} alt="오른쪽 화살표" /> */}
       </FillButtonBox>
     </>
   );
