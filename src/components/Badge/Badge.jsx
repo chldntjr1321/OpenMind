@@ -19,8 +19,8 @@ const AnswerYet = styled(AnswerEnd)`
   color: #818181;
 `;
 
-export default function Badge({ type }) {
-  if (type === 'end') {
+export default function Badge({ answer }) {
+  if (answer) {
     return <AnswerEnd>답변 완료</AnswerEnd>;
   } else {
     return <AnswerYet>미답변</AnswerYet>;

@@ -30,26 +30,19 @@ const StyledQuestion = styled.div`
   letter-spacing: 0px;
 `;
 
-function QuestionDot() {
-  return '질문 · ';
-}
-
 function UpdatedDate() {
   return '2주전';
 }
-function Question() {
-  return '좋아하는 동물은?';
-}
-function QuestionFeedCard() {
+
+function QuestionFeedCard({ question }) {
   return (
     <>
       <QuestionFeedBox>
         <StyledQuestionDot>
-          <QuestionDot />
-          <UpdatedDate />
+          <p>질문 · {<UpdatedDate />}</p>
         </StyledQuestionDot>
         <StyledQuestion>
-          <Question />
+          <p>{question.content}</p>
         </StyledQuestion>
       </QuestionFeedBox>
     </>

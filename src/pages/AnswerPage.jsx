@@ -17,6 +17,7 @@ import Edit from '../components/Edit/Edit';
 import Modal from '../components/Modal/Modal';
 import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const Banner = styled.div`
   width: 100%;
@@ -134,6 +135,10 @@ const CardHeader = styled.div`
   & img {
     cursor: pointer;
   }
+  & button {
+    background: none;
+    border: none;
+  }
 `;
 const AnswerBox = styled.div`
   display: flex;
@@ -213,14 +218,43 @@ const ModalOpenBtn = styled.button`
   cursor: pointer;
 `;
 
-export default function AnswerPage({ name, questionCount }) {
+export default function AnswerPage() {
+  const TEAM_ID = '19-1';
+  const [user, setUser] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isDisabled, setIsDisabled] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [openCardId, setOpenCardId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { id } = useParams();
   useEffect(() => {
     setIsDisabled(inputValue.trim() === '');
   }, [inputValue]);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!id) return;
+      try {
+        const [userRes, questionsRes] = await Promise.all([
+          fetch(`https://openmind-api.vercel.app/${TEAM_ID}/subjects/${id}/`),
+          fetch(
+            `https://openmind-api.vercel.app/${TEAM_ID}/subjects/${id}/questions/`
+          ),
+        ]);
+
+        if (!userRes.ok || !questionsRes.ok) {
+          throw new Error('서버 응답 실패');
+        }
+        const userData = await userRes.json();
+        const questionsData = await questionsRes.json();
+        setUser(userData);
+        setQuestions(questionsData.results);
+      } catch (err) {
+        console.error('데이터를 불러오지 못했습니다.', err);
+      }
+    }
+    fetchUserData();
+  }, [id]);
 
   return (
     <>
@@ -229,7 +263,7 @@ export default function AnswerPage({ name, questionCount }) {
           <img src={Logo} alt="로고 이미지" className="logo" />
           <ProfileBox>
             <img src={ProfileImg} alt="프로필 이미지" />
-            <p>{name}</p>
+            <p>{user ? user.name : '닉네임 불러오는 중..'}</p>
             <IconBox>
               <img src={ShareURLIcon} alt="링크URL 공유 아이콘" />
               <img src={ShareKakaoIcon} alt="카카오톡 공유 아이콘" />
@@ -241,34 +275,51 @@ export default function AnswerPage({ name, questionCount }) {
       <CardBox>
         <CardBoxHeader>
           <img src={MessageIcon} alt="메시지 아이콘" />
-          <p>{questionCount}개의 질문이 있습니다</p>
+          <p>{questions.length}개의 질문이 있습니다</p>
         </CardBoxHeader>
-        <Card>
-          <CardHeader>
-            <Badge />
-            <img
-              src={MoreIcon}
-              alt="더보기 버튼"
-              onClick={() => {
-                setIsOpen(!isOpen);
-              }}
-            />
-            {isOpen ? <Edit /> : null}
-          </CardHeader>
-          <QuestionFeedCard />
-          <AnswerBox>
-            <img src={ProfileImg} alt="프로필 이미지" />
-            <Contents>
-              <div></div>
-              <InputTextArea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+        {questions.map((question) => {
+          return (
+            <Card key={question.id}>
+              <CardHeader>
+                <Badge answer={question.answer} />
+                <button
+                  key={question.id}
+                  onClick={() => {
+                    setOpenCardId(
+                      openCardId === question.id ? null : question.id
+                    );
+                  }}
+                >
+                  <img src={MoreIcon} alt="더보기 버튼" />
+                </button>
+                {openCardId === question.id && <Edit />}
+              </CardHeader>
+              <QuestionFeedCard question={question} />
+              <AnswerBox>
+                <img src={ProfileImg} alt="프로필 이미지" />
+                <Contents>
+                  <p>{user.name}</p>
+                  {question.answer ? (
+                    question.answer.content
+                  ) : (
+                    <InputTextArea
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                    />
+                  )}
+                  {question.answer ? null : (
+                    <FilledBtn btnText={'답변 완료'} isDisabled={isDisabled} />
+                  )}
+                </Contents>
+              </AnswerBox>
+              <ReactionBtns
+                likeCount={question.like}
+                dislikeCount={question.dislike}
               />
-              <FilledBtn btnText={'답변 완료'} isDisabled={isDisabled} />
-            </Contents>
-          </AnswerBox>
-          <ReactionBtns />
-        </Card>
+            </Card>
+          );
+        })}
+
         <DeleteAllBtn>삭제하기</DeleteAllBtn>
       </CardBox>
 
