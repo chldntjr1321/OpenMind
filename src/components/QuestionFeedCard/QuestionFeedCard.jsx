@@ -30,8 +30,30 @@ const StyledQuestion = styled.div`
   letter-spacing: 0px;
 `;
 
-function UpdatedDate() {
-  return '2주전';
+function UpdatedDate({ createdAt }) {
+  const today = new Date();
+  const madeDate = new Date(createdAt);
+  const diffTime = today.getTime() - madeDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  // switch (true) {
+  //   case diffDays === 0:
+  //     return '오늘';
+  //   case diffDays < 7:
+  //     return `${diffDays}일 전`;
+  //   case diffDays < 30:
+  //     return `${Math.floor(diffDays / 7)}주 전`;
+  //   case diffDays < 365:
+  //     return `${Math.floor(diffDays / 30)}달 전`;
+  //   case diffDays >= 365:
+  //     return `${Math.floor(diffDays / 365)}년 전`;
+  //   default:
+  //     return '날짜 오류';
+  // }
+  if (diffDays === 0) return '오늘';
+  if (diffDays < 7) return `${diffDays}일 전`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}주 전`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)}달 전`;
+  return `${Math.floor(diffDays / 365)}년 전`;
 }
 
 function QuestionFeedCard({ question }) {
@@ -39,7 +61,7 @@ function QuestionFeedCard({ question }) {
     <>
       <QuestionFeedBox>
         <StyledQuestionDot>
-          <p>질문 · {<UpdatedDate />}</p>
+          <p>질문 · {<UpdatedDate createdAt={question.createdAt} />}</p>
         </StyledQuestionDot>
         <StyledQuestion>
           <p>{question.content}</p>
