@@ -1,28 +1,38 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import headerImg from '../assets/banner.svg';
+import logoImg from '../assets/logo.svg';
+import profileImg from '../assets/profile.svg';
+import linkIcon from '../assets/link.svg';
+import facebookIcon from '../assets/facebook.svg';
+import kakaoIcon from '../assets/kakao.svg';
+import messageIcon from '../assets/message-brown.svg';
+import emptyImg from '../assets/empty.svg';
+import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
+import { useEffect, useState } from 'react';
 
 const PostingHeader = styled.div`
-  background-color: #f9f9f9;
   display: flex;
   position: relative;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  min-height: 369px;
+  height: 369px;
   margin: 0 auto;
   @media (max-width: 375px) {
-    min-height: 299px;
+    height: 299px;
   }
 `;
-const PostingHeaderImage = styled.div`
-  background-color: #999999;
+const PostingHeaderImage = styled.img`
   width: 100%;
   height: 234px;
   object-fit: cover;
   object-position: center;
+  @media (max-width: 375px) {
+    height: 177px;
+  }
   `;
 const ProfileArea = styled.div`
-  background-color: #666666;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,7 +45,6 @@ const ProfileArea = styled.div`
   }
 `;
 const PostingLogo = styled.div`
-  background-color: #777777;
   position: relative;
   width: 170px;
   height: 67px;
@@ -43,18 +52,24 @@ const PostingLogo = styled.div`
     width: 124px;
     height: 49px;
   }
+  & > img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 const ProfileImg = styled.div`
-  background-color: #888888;
   width: 136px;
   height: 136px;
   @media (max-width: 375px) {
     width: 104px;
     height: 104px;
   }
+  & > img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 const ProfileUsername = styled.div`
-  background-color: #888888;
   width: auto;
   font-family: Pretendard;
   font-weight: 400;
@@ -67,13 +82,16 @@ const ProfileUsername = styled.div`
   }
 `;
 const ShareIconArea = styled.div`
-  background-color: #888888;
   display: flex;
   position: relative;
   flex-direction: row;
   width: 144px;
   height: 40px;
   gap: 0px 12px;
+  & > img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 const PostingBody = styled.div`
   background-color: #f9f9f9;
@@ -95,6 +113,14 @@ const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
   border-radius: 16px;
   padding: 16px 24px;
   gap: 8px;
+  & > span > img {
+    width: 24px;
+    height: 24px;
+    @media (max-width: 375px) {
+    width: 22px;
+    height: 22px;
+    }
+  }
   .emptyFeedText {
     color: #542f1a;
     display: inline-flex;
@@ -116,7 +142,6 @@ const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
 }
 `;
 const EmptyFeedImage = styled.div`
-  background-color: #999999;
   position: absolute;
   flex-direction: column;
   top: calc(16px + 50%);
@@ -127,6 +152,10 @@ const EmptyFeedImage = styled.div`
     top: 50%;
     width: 114px;
     height: 118px;
+  }
+  & > img {
+    width: 100%;
+    height: 100%;
   }
 `;
 const PostingArea = styled.div`   // 피드(질문)가 1개 이상인 경우
@@ -284,30 +313,38 @@ const ToastArea = styled.div`
     bottom: 100px;
   }
 `;
-const FloatingBtn = styled.div`
-  width: 208px;
-  height: 54px;
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  @media (max-width: 375px) {
-    width: auto;
-    min-width: 123px;
-  }
+const FloatingBtn = styled(FloatingButton)`
+  font-family: Actor;
 `;
 
 function PostingPage() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 375);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <PostingHeader>
-        <PostingHeaderImage />
+        <PostingHeaderImage src={headerImg} />
         <ProfileArea>
-          <PostingLogo />
-          <ProfileImg />
+          <PostingLogo>
+            <img src={logoImg} alt="로고 이미지" />
+          </PostingLogo>
+          <ProfileImg>
+            <img src={profileImg} alt="프로필 이미지" />
+          </ProfileImg>
           <ProfileUsername>
             아초는고양이
           </ProfileUsername>
-          <ShareIconArea />
+          <ShareIconArea>
+            <img src={linkIcon} alt="링크 URL 공유 아이콘" />
+            <img src={facebookIcon} alt="페이스북 공유 아이콘" />
+            <img src={kakaoIcon} alt="카카오톡 공유 아이콘" />
+          </ShareIconArea>
         </ProfileArea>
       </PostingHeader>
       <PostingBody>
@@ -341,11 +378,15 @@ function PostingPage() {
           </FeedCard>
         </PostingArea> */}
         <EmptyFeed>
-          <span className="emptyFeedText">아직 질문이 없습니다</span>
-          <EmptyFeedImage />
+          <span className="emptyFeedText"><img src={messageIcon} alt="메시지 아이콘" />아직 질문이 없습니다</span>
+          <EmptyFeedImage>
+            <img src={emptyImg} alt="빈 상자 이미지" />
+          </EmptyFeedImage>
         </EmptyFeed>
         <ToastArea />
-        <FloatingBtn />
+        <FloatingBtn>
+          {isMobile ? "질문 작성" : "질문 작성하기"}
+        </FloatingBtn>
       </PostingBody>
     </>
   );
