@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 
 const QuestionFeedBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   background-color: #ffffff;
   max-width: 620px;
   min-width: 247px;
   min-height: 46px;
   height: auto;
-  gap: 12px;
-  padding: 0px 2px 2px;
 `;
 const StyledQuestionDot = styled.div`
   color: #818181;
@@ -18,7 +19,7 @@ const StyledQuestionDot = styled.div`
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0px;
-`
+`;
 const StyledQuestion = styled.div`
   color: #000000;
   font-family: Actor;
@@ -30,20 +31,14 @@ const StyledQuestion = styled.div`
 `;
 
 function QuestionDot() {
-  return (
-    '질문 · '
-  );
+  return '질문 · ';
 }
 
 function UpdatedDate() {
-  return (
-    '2주전'
-  );
+  return '2주전';
 }
 function Question() {
-  return (
-    '좋아하는 동물은?'
-  );
+  return '좋아하는 동물은?';
 }
 function QuestionFeedCard() {
   return (

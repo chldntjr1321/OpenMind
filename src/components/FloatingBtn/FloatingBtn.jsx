@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const FloatingButton = styled.button`
+export const FloatingButton = styled.button`
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -21,10 +21,10 @@ const FloatingButton = styled.button`
   user-select: none;
 `;
 
-export default function FloatingBtn({ btnText, handleBtnClick }) {
+export default function FloatingBtn({ handleBtnClick }) {
   return (
     <>
-      <FloatingButton onClick={handleBtnClick}>{btnText}</FloatingButton>
+      <FloatingButton onClick={handleBtnClick}></FloatingButton>
     </>
   );
 }

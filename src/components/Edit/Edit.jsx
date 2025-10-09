@@ -5,6 +5,10 @@ import ActiveEditIcon from '../../assets/edit(blue).svg';
 import DeleteIcon from '../../assets/icon_x.svg';
 
 const OptionBox = styled.div`
+  position: absolute;
+  top: 25px;
+  right: 0;
+
   width: fit-content;
   background-color: #ffffff;
   cursor: pointer;
@@ -13,6 +17,7 @@ const OptionBox = styled.div`
   line-height: 18px;
   user-select: none;
   margin-top: 4px;
+  border-radius: 8px;
 
   & > ul {
     width: 103px;

@@ -1,13 +1,29 @@
 import styled from 'styled-components';
+import BannerImg from '../assets/banner.svg';
+import Logo from '../assets/logo.svg';
 import ProfileImg from '../assets/profile.svg';
 import ShareURLIcon from '../assets/link.svg';
 import ShareKakaoIcon from '../assets/kakao.svg';
 import ShareFacebookIcon from '../assets/facebook.svg';
+import MessageIcon from '../assets/message-brown.svg';
+import MoreIcon from '../assets/more.svg';
+import Badge from '../components/Badge/Badge';
+import QuestionFeedCard from '../components/QuestionFeedCard/QuestionFeedCard';
+import InputTextArea from '../components/InputTextArea/InputTextArea';
+import FilledBtn from '../components/ButtonBox/FilledBtn';
+import ReactionBtns from '../components/Reaction/Reaction';
+import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
+import Edit from '../components/Edit/Edit';
+import Modal from '../components/Modal/Modal';
+import ModalPortal from '../components/Portal';
+import { useEffect, useState } from 'react';
 
 const Banner = styled.div`
-  background-color: skyblue;
   width: 100%;
   height: 234px;
+  background-image: url(${BannerImg});
+  background-size: cover;
+  background-position: center 70%;
   position: relative;
 `;
 const HeaderBox = styled.div`
@@ -21,18 +37,17 @@ const HeaderBox = styled.div`
   align-items: center;
   gap: 12px;
   z-index: 2;
-`;
-const Logo = styled.div`
-  background-color: pink;
-  width: 170px;
-  height: 67px;
-  @media (max-width: 375px) {
-    width: 124px;
-    height: 49px;
+  & .logo {
+    width: 170px;
+    height: 67px;
+    cursor: pointer;
+    @media (max-width: 375px) {
+      width: 124px;
+      height: 49px;
+    }
   }
 `;
 const ProfileBox = styled.div`
-  background-color: lightgray;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,9 +56,18 @@ const ProfileBox = styled.div`
   & img {
     width: 136px;
   }
+  & p {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 40px;
+  }
   @media (max-width: 375px) {
     & img {
       width: 104px;
+    }
+    & p {
+      font-size: 24px;
+      line-height: 30px;
     }
   }
 `;
@@ -54,6 +78,7 @@ const IconBox = styled.div`
 
   & img {
     width: 40px;
+    cursor: pointer;
   }
 `;
 const CardBox = styled.div`
@@ -74,38 +99,61 @@ const CardBox = styled.div`
     margin: 176px 24px 168px 24px;
   }
 `;
+const CardBoxHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  & img {
+    width: 24px;
+  }
+  & p {
+    color: #542f1a;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+`;
+
 const Card = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   gap: 32px;
   padding: 32px;
+  border-radius: 16px;
   @media (max-width: 375px) {
     padding: 24px;
     gap: 24px;
   }
 `;
 const CardHeader = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
-  & div {
-    background-color: yellow;
+  & img {
+    cursor: pointer;
   }
 `;
-const Question = styled.div`
-  background-color: mediumaquamarine;
-`;
 const AnswerBox = styled.div`
-  background-color: lavender;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   & img {
     width: 48px;
   }
+  & p {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+  }
   @media (max-width: 375px) {
     & img {
       width: 32px;
+    }
+    & p {
+      font-size: 14px;
+      line-height: 18px;
     }
   }
 `;
@@ -114,27 +162,23 @@ const Contents = styled.div`
   flex-direction: column;
   gap: 4px;
   width: 100%;
+  & p {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+  }
 `;
 const TextArea = styled.div`
-  background-color: peru;
   min-height: 186px;
-
   word-break: break-all;
 `;
 const AnswerEndBtn = styled.div`
-  background-color: lightskyblue;
   width: 100%;
   padding: 12px 24px;
   text-align: center;
 `;
-const ReactionBtns = styled.div`
-  background-color: palevioletred;
-  display: flex;
-  gap: 32px;
-  padding-top: 24px;
-`;
-const DeleteAllBtn = styled.div`
-  background-color: burlywood;
+
+const DeleteAllBtn = styled(FloatingButton)`
   position: absolute;
   top: -9px;
   right: 0;
@@ -156,17 +200,36 @@ const DeleteAllBtn = styled.div`
     white-space: nowrap;
   }
 `;
+const ModalOpenBtn = styled.button`
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background-color: #542f1a;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+`;
 
-export default function AnswerPage() {
+export default function AnswerPage({ name, questionCount }) {
+  const [inputValue, setInputValue] = useState('');
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    setIsDisabled(inputValue.trim() === '');
+  }, [inputValue]);
+
   return (
     <>
       <Banner>
-        배너
         <HeaderBox>
-          <Logo>로고</Logo>
+          <img src={Logo} alt="로고 이미지" className="logo" />
           <ProfileBox>
             <img src={ProfileImg} alt="프로필 이미지" />
-            <p>닉네임 기입 공간</p>
+            <p>{name}</p>
             <IconBox>
               <img src={ShareURLIcon} alt="링크URL 공유 아이콘" />
               <img src={ShareKakaoIcon} alt="카카오톡 공유 아이콘" />
@@ -176,42 +239,46 @@ export default function AnswerPage() {
         </HeaderBox>
       </Banner>
       <CardBox>
-        <p>질문 개수 표시 부분</p>
+        <CardBoxHeader>
+          <img src={MessageIcon} alt="메시지 아이콘" />
+          <p>{questionCount}개의 질문이 있습니다</p>
+        </CardBoxHeader>
         <Card>
           <CardHeader>
-            <div>답변 여부</div>
-            <div>타코 메뉴</div>
+            <Badge />
+            <img
+              src={MoreIcon}
+              alt="더보기 버튼"
+              onClick={() => {
+                setIsOpen(!isOpen);
+              }}
+            />
+            {isOpen ? <Edit /> : null}
           </CardHeader>
-          <Question>
-            <div>질문 생성 일자</div>
-            <div>질문 내용</div>
-          </Question>
+          <QuestionFeedCard />
           <AnswerBox>
             <img src={ProfileImg} alt="프로필 이미지" />
             <Contents>
-              <div>유저 이름</div>
-              <TextArea>
-                그들을 불러 귀는 이상의 오직 피고, 가슴이 이상, 못할 봄바람이다.
-                찾아다녀도, 전인 방황하였으며, 대한 바이며, 이것이야말로 가치를
-                청춘의 따뜻한 그리하였는가? 몸이 열락의 청춘의 때문이다. 천고에
-                피어나는 간에 밝은 이상, 인생의 만물은 피다. 대중을 이성은
-                방황하여도, 그리하였는가? 크고 평화스러운 품에 방황하였으며,
-                말이다. 이상은 들어 예수는 크고 긴지라 역사를 피다. 얼음에
-                있음으로써 꽃 보배를 곧 가는 교향악이다. 우는 새 예가 우리의
-                것은 피다. 피가 그것을 어디 앞이 기쁘며, 이상의 열락의 위하여서
-                끝까지 것이다. 있는 봄바람을 방황하여도, 우리의 것은 작고 아니한
-                영원히 듣기만 운다.
-              </TextArea>
-              <AnswerEndBtn>답변 완료 버튼</AnswerEndBtn>
+              <div></div>
+              <InputTextArea
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <FilledBtn btnText={'답변 완료'} isDisabled={isDisabled} />
             </Contents>
           </AnswerBox>
-          <ReactionBtns>
-            <div>좋아요 버튼</div>
-            <div>싫어요 버튼</div>
-          </ReactionBtns>
+          <ReactionBtns />
         </Card>
         <DeleteAllBtn>삭제하기</DeleteAllBtn>
       </CardBox>
+
+      {/* 포탈 */}
+      <ModalOpenBtn onClick={() => setIsModalOpen(true)}>
+        모달 열기
+      </ModalOpenBtn>
+      <ModalPortal>
+        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
+      </ModalPortal>
     </>
   );
 }
