@@ -34,10 +34,10 @@ const FillButtonBox = styled.div`
   }
 `;
 
-export default function FilledBtn({ btnText, isDisabled }) {
+export default function FilledBtn({ btnText, isDisabled, onClick }) {
   return (
     <>
-      <FillButtonBox className={isDisabled ? 'disabled' : ''}>
+      <FillButtonBox className={isDisabled ? 'disabled' : ''} onClick={onClick}>
         {btnText}
         {/* <img src={RightArrow} alt="오른쪽 화살표" /> */}
       </FillButtonBox>

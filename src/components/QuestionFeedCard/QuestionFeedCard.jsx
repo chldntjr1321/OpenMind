@@ -32,22 +32,19 @@ const StyledQuestion = styled.div`
 
 function UpdatedDate({ createdAt }) {
   const today = new Date();
-  const madeDate = new Date(createdAt);
-  const diffTime = today.getTime() - madeDate.getTime();
+  const made = new Date(createdAt);
+  const todayDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const madeDate = new Date(
+    made.getFullYear(),
+    made.getMonth(),
+    made.getDate()
+  );
+  const diffTime = todayDate.getTime() - madeDate.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  // switch (true) {
-  //   case diffDays === 0:
-  //     return '오늘';
-  //   case diffDays < 7:
-  //     return `${diffDays}일 전`;
-  //   case diffDays < 30:
-  //     return `${Math.floor(diffDays / 7)}주 전`;
-  //   case diffDays < 365:
-  //     return `${Math.floor(diffDays / 30)}달 전`;
-  //   case diffDays >= 365:
-  //     return `${Math.floor(diffDays / 365)}년 전`;
-  //   default:
-  //     return '날짜 오류';
   // }
   if (diffDays === 0) return '오늘';
   if (diffDays < 7) return `${diffDays}일 전`;

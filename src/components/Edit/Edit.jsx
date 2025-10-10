@@ -78,11 +78,11 @@ const OptionBox = styled.div`
 `;
 
 export default function Edit({
+  onEdit,
   isEditActive,
   setIsEditActive,
   isDeleteActive,
   setIsDeleteActive,
-  onEdit,
   onDelete,
 }) {
   return (
@@ -90,7 +90,8 @@ export default function Edit({
       <OptionBox>
         <ul>
           <li
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setIsEditActive(!isEditActive);
               onEdit();
             }}
@@ -116,7 +117,8 @@ export default function Edit({
             수정하기
           </li>
           <li
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               setIsDeleteActive(!isDeleteActive);
               onDelete();
             }}

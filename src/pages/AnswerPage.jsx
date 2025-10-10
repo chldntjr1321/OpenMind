@@ -17,7 +17,7 @@ import Edit from '../components/Edit/Edit';
 import Modal from '../components/Modal/Modal';
 import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const Banner = styled.div`
   width: 100%;
@@ -173,16 +173,6 @@ const Contents = styled.div`
     line-height: 24px;
   }
 `;
-const TextArea = styled.div`
-  min-height: 186px;
-  word-break: break-all;
-`;
-const AnswerEndBtn = styled.div`
-  width: 100%;
-  padding: 12px 24px;
-  text-align: center;
-`;
-
 const DeleteAllBtn = styled(FloatingButton)`
   position: absolute;
   top: -9px;
@@ -222,14 +212,11 @@ export default function AnswerPage() {
   const TEAM_ID = '19-1';
   const [user, setUser] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [inputValues, setInputValues] = useState({});
   const [openCardId, setOpenCardId] = useState(null);
+  const [editingCards, setEditingCards] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
-  useEffect(() => {
-    setIsDisabled(inputValue.trim() === '');
-  }, [inputValue]);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -256,11 +243,139 @@ export default function AnswerPage() {
     fetchUserData();
   }, [id]);
 
+  const handleInputChange = (id, value) => {
+    setInputValues((prev) => ({ ...prev, [id]: value }));
+  };
+  const handleEditClick = (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) return;
+
+    setEditingCards({ [id]: true });
+    setInputValues((prev) => ({
+      ...prev,
+      [id]: question.answer?.content ?? '',
+    }));
+  };
+  const answerContent = (question) => {
+    const currentInput = inputValues[question.id] || '';
+    const isDisabled = currentInput.trim().length === 0;
+
+    if (editingCards[question.id]) {
+      return (
+        <>
+          <InputTextArea
+            value={inputValues[question.id] || ''}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          />
+          <FilledBtn
+            btnText={'수정 완료'}
+            isDisabled={isDisabled}
+            onClick={() => {
+              handleUpdateAnswer(question.id);
+              setOpenCardId(null);
+            }}
+          />
+        </>
+      );
+    }
+    if (question.answer) {
+      return <>{question.answer.content}</>;
+    } else {
+      return (
+        <>
+          <InputTextArea
+            value={currentInput}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          />
+          <FilledBtn
+            btnText="답변 완료"
+            isDisabled={isDisabled}
+            onClick={() => handleCreateAnswer(question.id)}
+          />
+        </>
+      );
+    }
+  };
+  const handleUpdateAnswer = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question || !question.answer) {
+      console.error('해당 질문이나 답변을 찾을 수 없습니다.');
+      return;
+    }
+    const answerId = question.answer.id;
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: inputValues[id],
+            isRejected: false,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('답변 수정 실패');
+
+      const updatedAnswer = await response.json();
+
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === id ? { ...q, answer: updatedAnswer } : q))
+      );
+      setEditingCards((prev) => ({ ...prev, [id]: false }));
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+  const handleCreateAnswer = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) {
+      console.error('해당 질문을 찾을 수 없습니다.');
+      return;
+    }
+    const questionId = question.id;
+    const content = (inputValues[id] || '').trim();
+    if (content.length === 0) {
+      console.error('답변 내용이 비어 있습니다.');
+      return;
+    }
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/answers/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content,
+            isRejected: false,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('답변 생성 실패');
+
+      const updatedAnswer = await response.json();
+
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === id ? { ...q, answer: updatedAnswer } : q))
+      );
+      setEditingCards((prev) => ({ ...prev, [id]: false }));
+      setInputValues((prev) => ({ ...prev, [id]: '' }));
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+
   return (
     <>
       <Banner>
         <HeaderBox>
-          <img src={Logo} alt="로고 이미지" className="logo" />
+          <Link to="/">
+            <img src={Logo} alt="로고 이미지" className="logo" />
+          </Link>
           <ProfileBox>
             <img src={ProfileImg} alt="프로필 이미지" />
             <p>{user ? user.name : '닉네임 불러오는 중..'}</p>
@@ -292,24 +407,25 @@ export default function AnswerPage() {
                 >
                   <img src={MoreIcon} alt="더보기 버튼" />
                 </button>
-                {openCardId === question.id && <Edit />}
+                {openCardId === question.id && (
+                  <Edit
+                    onEdit={() => handleEditClick(question.id)}
+                    isEditActive={editingCards[question.id] || false}
+                    setIsEditActive={(value) =>
+                      setEditingCards((prev) => ({
+                        ...prev,
+                        [question.id]: value,
+                      }))
+                    }
+                  />
+                )}
               </CardHeader>
               <QuestionFeedCard question={question} />
               <AnswerBox>
                 <img src={ProfileImg} alt="프로필 이미지" />
                 <Contents>
                   <p>{user.name}</p>
-                  {question.answer ? (
-                    question.answer.content
-                  ) : (
-                    <InputTextArea
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                    />
-                  )}
-                  {question.answer ? null : (
-                    <FilledBtn btnText={'답변 완료'} isDisabled={isDisabled} />
-                  )}
+                  {answerContent(question)}
                 </Contents>
               </AnswerBox>
               <ReactionBtns
