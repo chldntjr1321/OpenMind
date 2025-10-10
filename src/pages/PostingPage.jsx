@@ -7,6 +7,10 @@ import facebookIcon from '../assets/facebook.svg';
 import kakaoIcon from '../assets/kakao.svg';
 import messageIcon from '../assets/message-brown.svg';
 import emptyImg from '../assets/empty.svg';
+import Badge from '../components/Badge/Badge';
+import QuestionFeedCard from '../components/QuestionFeedCard/QuestionFeedCard';
+import Reaction from '../components/Reaction/Reaction';
+import Toast from '../components/Toast/Toast';
 import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import { useEffect, useState } from 'react';
 
@@ -133,7 +137,6 @@ const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
     @media (max-width: 375px) {
       font-size: 18px;
       line-height: 24px;
-      letter-spacing: 0px;
   }
 }
 @media (max-width: 375px) {
@@ -171,16 +174,24 @@ const PostingArea = styled.div`   // 피드(질문)가 1개 이상인 경우
   border-radius: 16px;
   padding: 16px;
   gap: 16px;
-  .questionCount {
+  & > span > img {
+    width: 24px;
+    height: 24px;
+    @media (max-width: 375px) {
+    width: 22px;
+    height: 22px;
+    }
+  }
+  .questionCountText {
     color: #542f1a;
+    display: inline-flex;
     font-family: Actor;
     font-weight: 400;
     font-size: 20px;
     line-height: 25px;
     letter-spacing: 0px;
+    gap: 8px;
     @media (max-width: 375px) {
-      font-family: Actor;
-      font-weight: 400;
       font-size: 18px;
       line-height: 24px;
     }
@@ -190,10 +201,10 @@ const FeedCard = styled.div`
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
   max-width: 684px;
   height: auto;
+  box-shadow: 0px 4px 4px 0px rgba(140, 140, 140, 0.25);
   border-radius: 16px;
   padding: 32px;
   gap: 32px;
@@ -204,30 +215,8 @@ const FeedCard = styled.div`
   }
 `;
 const FeedBadge = styled.div`
-  background-color: #999999;
   width: 100%;
   height: 26px;
-  @media (max-width: 375px) {
-    width: 100%;
-  }
-`;
-const QuestionFeed = styled.div`
-  background-color: orange;
-  display: flex;
-  flex-direction: column;
-  width:100%;
-  height: auto;
-  .question {
-    font-family: Actor;
-    font-weight: 400;
-    font-size: 18px;
-    line-height: 24px;
-    letter-spacing: 0px;
-    @media (max-width: 375px) {
-      font-size: 16px;
-      line-height: 22px;
-    }
-  }
 `;
 const UpdatedTime = styled.div`
   color: #818181;
@@ -237,13 +226,8 @@ const UpdatedTime = styled.div`
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0px;
-  @media (max-width: 375px) {
-    font-size: 14px;
-    line-height: 18px;
-  }
 `;
 const AnswerFeed = styled.div`
-  background-color: #999999;
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -260,13 +244,15 @@ const AnswerRight = styled.div`
   flex: 1;
 `;
 const AnswerProfileImg = styled.div`
-  background-color: #666666;
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  & > img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 const AnswerUsername = styled.div`
-  background-color: orange;
   display: flex;
   align-items: center;
   width: 100%;
@@ -285,7 +271,6 @@ const AnswerUsername = styled.div`
   }
 `;
 const AnswerContents = styled.div`
-  background-color: orange;
   width: 100%;
   height: auto;
   & {
@@ -297,22 +282,18 @@ const AnswerContents = styled.div`
   }
   word-break: break-word;
 `;
-const AnswerReaction = styled.div`
-  background-color: #999999;
-  display: flex;
-  flex-direction: column;
+const AnswerRejected = styled.div`
   width: 100%;
-  height: 43px;
-`;
-const ToastArea = styled.div`
-  width: 167px;
-  height: 42px;
-  position: fixed;
-  bottom: 60px;
-  @media (max-width: 375px) {
-    bottom: 100px;
+  height: auto;
+  & {
+    color: #b93333;
+    font-family: Pretendard;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 0px;
   }
-`;
+`
 const FloatingBtn = styled(FloatingButton)`
   font-family: Actor;
 `;
@@ -321,7 +302,16 @@ function PostingPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 375);
+    const handleResize = () => {
+      if (window.innerWidth < 375) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    };
+
+    handleResize();
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -348,19 +338,18 @@ function PostingPage() {
         </ProfileArea>
       </PostingHeader>
       <PostingBody>
-        {/* <PostingArea>
-          <div className="questionCount">3개의 질문이 있습니다</div>
+        <PostingArea>
+          <span className="questionCountText"><img src={messageIcon} alt="메시지 아이콘" />개의 질문이 있습니다</span>
           <FeedCard>
-            <FeedBadge />
-            <QuestionFeed>
-              <div>
-                <UpdatedTime>질문 · 2주전</UpdatedTime>
-              </div>
-              <div className="question">좋아하는 동물은?</div>
-            </QuestionFeed>
+            <FeedBadge>
+              <Badge />
+            </FeedBadge>
+            <QuestionFeedCard />
             <AnswerFeed>
               <AnswerLeft>
-                <AnswerProfileImg />
+                <AnswerProfileImg>
+                  <img src={profileImg} alt="프로필 이미지" />
+                </AnswerProfileImg>
               </AnswerLeft>
               <AnswerRight>
                 <AnswerUsername>
@@ -374,19 +363,51 @@ function PostingPage() {
                 </AnswerContents>
               </AnswerRight>
             </AnswerFeed>
-            <AnswerReaction />
+            <Reaction />
           </FeedCard>
-        </PostingArea> */}
-        <EmptyFeed>
+          <FeedCard>
+            <FeedBadge>
+              <Badge />
+            </FeedBadge>
+            <QuestionFeedCard />
+            <Reaction />
+          </FeedCard>
+          <FeedCard>
+            <FeedBadge>
+              <Badge />
+            </FeedBadge>
+            <QuestionFeedCard />
+            <AnswerFeed>
+              <AnswerLeft>
+                <AnswerProfileImg>
+                  <img src={profileImg} alt="프로필 이미지" />
+                </AnswerProfileImg>
+              </AnswerLeft>
+              <AnswerRight>
+                <AnswerUsername>
+                  <span>아초는고양이</span>
+                  <div>
+                    <UpdatedTime>2주전</UpdatedTime>
+                  </div>
+                </AnswerUsername>
+                <AnswerRejected>
+                  <span>답변 거절</span>
+                </AnswerRejected>
+              </AnswerRight>
+            </AnswerFeed>
+            <Reaction />
+          </FeedCard>
+        </PostingArea>
+        {/* <EmptyFeed>
           <span className="emptyFeedText"><img src={messageIcon} alt="메시지 아이콘" />아직 질문이 없습니다</span>
           <EmptyFeedImage>
             <img src={emptyImg} alt="빈 상자 이미지" />
           </EmptyFeedImage>
-        </EmptyFeed>
-        <ToastArea />
+        </EmptyFeed> */}
         <FloatingBtn>
           {isMobile ? "질문 작성" : "질문 작성하기"}
         </FloatingBtn>
+        <Toast />
       </PostingBody>
     </>
   );
