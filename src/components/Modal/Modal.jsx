@@ -4,7 +4,7 @@ import CloseIcon from '../../assets/close.svg';
 import ProfileImg from '../../assets/profile.svg';
 import InputTextArea from '../InputTextArea/InputTextArea';
 import FilledBtn from '../ButtonBox/FilledBtn';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const ModalBox = styled.div`
   position: fixed;
@@ -89,6 +89,9 @@ const Overlay = styled.div`
 export default function Modal({ onClose }) {
   const [isDisabled, setIsDisabled] = useState(true);
   const [inputValue, setInputValue] = useState('');
+
+  const textareaRef = useRef(null);
+
   useEffect(() => {
     if (inputValue.trim() === '') {
       setIsDisabled(true);
@@ -96,6 +99,13 @@ export default function Modal({ onClose }) {
       setIsDisabled(false);
     }
   }, [inputValue]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
   return (
     <Overlay onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
@@ -113,6 +123,7 @@ export default function Modal({ onClose }) {
         </RecieveUser>
         <ContentBox>
           <InputTextArea
+            ref={textareaRef}
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);

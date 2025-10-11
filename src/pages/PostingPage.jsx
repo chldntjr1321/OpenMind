@@ -410,9 +410,11 @@ function PostingPage() {
         <FloatingBtn onClick={() => setIsModalOpen(true)}>
           {isMobile ? "질문 작성" : "질문 작성하기"}
         </FloatingBtn>
-        <ModalPortal>
-          {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
-        </ModalPortal>
+        {isModalOpen && (
+          <ModalPortal>
+            <Modal onClose={() => setIsModalOpen(false)} />
+          </ModalPortal>
+        )}
         <Toast />
       </PostingBody>
     </>
