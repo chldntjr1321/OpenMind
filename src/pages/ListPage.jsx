@@ -1,10 +1,40 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import logoImage from '../assets/image/logo.svg';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import Dropdown from '../components/Dropdown/Dropdown';
+import UserCard from '../components/UserCard/UserCard';
+import Pagenation from '../components/Pagenation/Pagenation';
 
 function ListPage() {
   const [selectedOption, setSelectedOption] = useState('recent');
+  const [subjects, setSubjects] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetchSubjects();
+  }, [selectedOption, currentPage]);
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/19-1/subjects/?limit=8&offset=${(currentPage - 1) * 8}`
+      );
+      const data = await response.json();
+      
+      let sortedResults = data.results || [];
+      
+      if (selectedOption === 'name') {
+        sortedResults = sortedResults.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        sortedResults = sortedResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+      
+      setSubjects(sortedResults);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const handleLogoClick = () => {
     window.location.href = '/';
@@ -46,7 +76,7 @@ function ListPage() {
         }
 
         .header-wrap {
-          padding: 45px 130px;
+          padding: 49px 130px 45px;
           margin: 0 auto;
           display: flex;
           justify-content: space-between;
@@ -123,10 +153,16 @@ function ListPage() {
           </div>
           <div className="card-box">
             <div className="card-grid" id="cardGrid">
-              {/* 카드 아이템들이 동적으로 추가 */}
+              {subjects.map((subject) => (
+                <UserCard 
+                  key={subject.id}
+                  name={subject.name}
+                  questionCount={subject.questionCount}
+                />
+              ))}
             </div>
             <div className="pagination" id="pagination">
-              {/* 페이지네이션이 동적으로 추가 */}
+              <Pagenation/>
             </div>
           </div>
         </div>
