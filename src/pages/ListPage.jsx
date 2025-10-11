@@ -124,6 +124,7 @@ function ListPage() {
         .pagination {
           display: flex;
           justify-content: center;
+          margin-top: 40px;
           gap: 8px;
         }
       `}</style>
