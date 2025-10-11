@@ -12,6 +12,8 @@ import QuestionFeedCard from '../components/QuestionFeedCard/QuestionFeedCard';
 import Reaction from '../components/Reaction/Reaction';
 import Toast from '../components/Toast/Toast';
 import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
+import Modal from '../components/Modal/Modal';
+import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
 
 const PostingHeader = styled.div`
@@ -300,6 +302,7 @@ const FloatingBtn = styled(FloatingButton)`
 
 function PostingPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -404,9 +407,12 @@ function PostingPage() {
             <img src={emptyImg} alt="빈 상자 이미지" />
           </EmptyFeedImage>
         </EmptyFeed> */}
-        <FloatingBtn>
+        <FloatingBtn onClick={() => setIsModalOpen(true)}>
           {isMobile ? "질문 작성" : "질문 작성하기"}
         </FloatingBtn>
+        <ModalPortal>
+          {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
+        </ModalPortal>
         <Toast />
       </PostingBody>
     </>
