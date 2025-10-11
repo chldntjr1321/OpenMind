@@ -80,15 +80,15 @@ function MainPage() {
         }
 
         .main-illustration {
-          width: 1200px;
-          margin: -331px auto 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        .main-illustration img {
           width: 100%;
-          height: auto;
+          height: 627px;
+          position: absolute;
+          top: 205px;
+          z-index: 0;
+          background-image: url(${illustrationImage});
+          background-size: cover;
+          background-position: center;
+          background-repeat: relative;
         }
       `}</style>
 
@@ -113,10 +113,7 @@ function MainPage() {
           </div>
         </form>
       </main>
-
-      <div className="main-illustration">
-        <img src={illustrationImage} alt="배너 일러스트" />
-      </div>
+      <div className="main-illustration"></div>
     </div>
   );
 }
