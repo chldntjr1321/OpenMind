@@ -36,7 +36,13 @@ const Like = styled.div`
 `;
 const DisLike = styled(Like)``;
 
-export default function Reaction({ likeCount, isDisLike, onLike, onDislike }) {
+export default function Reaction({
+  likeCount,
+  dislikeCount,
+  isDisLike,
+  onLike,
+  onDislike,
+}) {
   return (
     <>
       <IconBox>
@@ -52,11 +58,13 @@ export default function Reaction({ likeCount, isDisLike, onLike, onDislike }) {
         </Like>
         <DisLike>
           <img
-            src={isDisLike ? ActiveDisLike : InActiveDisLike}
+            src={isDisLike > 0 ? ActiveDisLike : InActiveDisLike}
             alt="싫어요 버튼"
             onClick={onDislike}
           />
-          <p className={isDisLike ? 'active--dislike' : null}>싫어요</p>
+          <p className={isDisLike > 0 ? 'active--dislike' : null}>
+            {dislikeCount > 0 ? `싫어요 ${dislikeCount}` : `싫어요`}
+          </p>
         </DisLike>
       </IconBox>
     </>
