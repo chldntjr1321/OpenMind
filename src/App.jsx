@@ -1,6 +1,8 @@
 import GlobalStyle from './components/GlobalStyle';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AnswerPage from './pages/AnswerPage';
+import MainPage from './pages/MainPage';
+import ListPage from './pages/ListPage';
 
 function App() {
   return (
@@ -8,8 +10,8 @@ function App() {
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AnswerPage />} />
-          <Route path="/list" element={<p>이곳은 리스트 화면입니다.</p>} />
+          <Route path="/" element={<MainPage />} />
+          <Route path="/list" element={<ListPage />} />
           <Route
             path="/post/:id"
             element={<p>이곳은 개별 피드 화면입니다.</p>}
@@ -22,5 +24,4 @@ function App() {
     </>
   );
 }
-
 export default App;

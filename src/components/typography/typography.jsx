@@ -72,7 +72,6 @@ const variantStyles = {
         fontSize: '14px',
         fontWeight: 400,
         lineHeight: '18px',
-        fontFamily: 'Actor',
     },
 };
 
@@ -109,17 +108,3 @@ const Text = ({
 };
 
 export default Text;
-
-function App() {
-    return (
-        <div>
-            <Text variant="h1">메인 제목</Text>
-            <Text variant="h2">서브 제목</Text>
-            <Text variant="body1-regular">본문 텍스트</Text>
-            <Text variant="body1-bold">굵은 본문</Text>
-            <Text variant="caption1-regular" color="var(--brown40)">
-                커스텀 컬러 캡션
-            </Text>
-        </div>
-    );
-}
