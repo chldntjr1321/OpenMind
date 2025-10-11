@@ -81,9 +81,9 @@ export default function Edit({
   onEdit,
   isEditActive,
   setIsEditActive,
+  onDelete,
   isDeleteActive,
   setIsDeleteActive,
-  onDelete,
 }) {
   return (
     <>

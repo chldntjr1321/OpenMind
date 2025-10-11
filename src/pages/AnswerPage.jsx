@@ -215,6 +215,7 @@ export default function AnswerPage() {
   const [inputValues, setInputValues] = useState({});
   const [openCardId, setOpenCardId] = useState(null);
   const [editingCards, setEditingCards] = useState({});
+  const [deletingCards, setDeletingCards] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
 
@@ -296,39 +297,6 @@ export default function AnswerPage() {
       );
     }
   };
-  const handleUpdateAnswer = async (id) => {
-    const question = questions.find((q) => q.id === id);
-    if (!question || !question.answer) {
-      console.error('해당 질문이나 답변을 찾을 수 없습니다.');
-      return;
-    }
-    const answerId = question.answer.id;
-    try {
-      const response = await fetch(
-        `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            content: inputValues[id],
-            isRejected: false,
-          }),
-        }
-      );
-      if (!response.ok) throw new Error('답변 수정 실패');
-
-      const updatedAnswer = await response.json();
-
-      setQuestions((prev) =>
-        prev.map((q) => (q.id === id ? { ...q, answer: updatedAnswer } : q))
-      );
-      setEditingCards((prev) => ({ ...prev, [id]: false }));
-    } catch (error) {
-      console.error('에러가 발생했습니다.', error);
-    }
-  };
   const handleCreateAnswer = async (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) {
@@ -366,6 +334,84 @@ export default function AnswerPage() {
       setInputValues((prev) => ({ ...prev, [id]: '' }));
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    }
+  };
+  const handleUpdateAnswer = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question || !question.answer) {
+      console.error('해당 질문이나 답변을 찾을 수 없습니다.');
+      return;
+    }
+    const answerId = question.answer.id;
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: inputValues[id],
+            isRejected: false,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('답변 수정 실패');
+
+      const updatedAnswer = await response.json();
+
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === id ? { ...q, answer: updatedAnswer } : q))
+      );
+      setEditingCards((prev) => ({ ...prev, [id]: false }));
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+  const handleDeleteQuestion = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) {
+      console.error('해당 질문을 찾을 수 없습니다.');
+      return;
+    }
+    const questionId = question.id;
+
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (!response.ok) throw new Error('질문 삭제 실패');
+
+      setQuestions((prev) => prev.filter((q) => q.id !== id));
+      setEditingCards((prev) => ({ ...prev, [id]: false }));
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+  const handleDeleteQuestionsAll = async () => {
+    if (questions.length === 0) {
+      console.error('질문이 없습니다!');
+      return;
+    }
+
+    try {
+      await Promise.all(
+        questions.map((q) =>
+          fetch(
+            `https://openmind-api.vercel.app/${TEAM_ID}/questions/${q.id}/`,
+            {
+              method: 'DELETE',
+            }
+          )
+        )
+      );
+      setQuestions([]); // 화면에서 질문들 모두 제거
+    } catch (error) {
+      console.error('전체 삭제 실패:', error);
     }
   };
 
@@ -417,6 +463,14 @@ export default function AnswerPage() {
                         [question.id]: value,
                       }))
                     }
+                    onDelete={() => handleDeleteQuestion(question.id)}
+                    isDeleteActive={deletingCards[question.id] || false}
+                    setIsDeleteActive={(value) =>
+                      setDeletingCards((prev) => ({
+                        ...prev,
+                        [question.id]: value,
+                      }))
+                    }
                   />
                 )}
               </CardHeader>
@@ -436,7 +490,7 @@ export default function AnswerPage() {
           );
         })}
 
-        <DeleteAllBtn>삭제하기</DeleteAllBtn>
+        <DeleteAllBtn onClick={handleDeleteQuestionsAll}>삭제하기</DeleteAllBtn>
       </CardBox>
 
       {/* 포탈 */}
