@@ -42,24 +42,27 @@ export default function Reaction({
   dislikeCount,
   onLike,
   onDislike,
-  isLiked,
-  isDisLiked,
+  isClickedLike,
+  isClickedDislike,
 }) {
   return (
     <>
       <IconBox>
         <Like onClick={onLike}>
-          <img src={isLiked ? ActiveLike : InActiveLike} alt="좋아요 버튼" />
-          <p className={isLiked ? 'active--like' : null}>
+          <img
+            src={isClickedLike ? ActiveLike : InActiveLike}
+            alt="좋아요 버튼"
+          />
+          <p className={isClickedLike ? 'active--like' : null}>
             {likeCount ? `좋아요 ${likeCount}` : `좋아요`}
           </p>
         </Like>
         <DisLike onClick={onDislike}>
           <img
-            src={isDisLiked ? ActiveDisLike : InActiveDisLike}
+            src={isClickedDislike ? ActiveDisLike : InActiveDisLike}
             alt="싫어요 버튼"
           />
-          <p className={isDisLiked ? 'active--dislike' : null}>
+          <p className={isClickedDislike ? 'active--dislike' : null}>
             {dislikeCount ? `싫어요 ${dislikeCount}` : `싫어요`}
           </p>
         </DisLike>

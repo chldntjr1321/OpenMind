@@ -214,6 +214,15 @@ export default function AnswerPage() {
   const [openCardId, setOpenCardId] = useState(null);
   const [editingCards, setEditingCards] = useState({});
   const [deletingCards, setDeletingCards] = useState({});
+  // state에 함수를 넣으면 복잡한 계산을 매 렌더링마다 하지 않아도 된다고 합니다~!
+  const [clickedLikes, setClickedLikes] = useState(() => {
+    const likes = localStorage.getItem('clickedLikes');
+    return likes ? JSON.parse(likes) : [];
+  });
+  const [clickedDislikes, setClickedDislikes] = useState(() => {
+    const dislikes = localStorage.getItem('clickedDislikes');
+    return dislikes ? JSON.parse(dislikes) : [];
+  });
   const { id } = useParams();
 
   useEffect(() => {
@@ -244,6 +253,8 @@ export default function AnswerPage() {
   const handleInputChange = (id, value) => {
     setInputValues((prev) => ({ ...prev, [id]: value }));
   };
+
+  // 수정 버튼 클릭 시 동작 함수
   const handleEditClick = (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) return;
@@ -294,6 +305,8 @@ export default function AnswerPage() {
       );
     }
   };
+
+  // 답변 생성 함수
   const handleCreateAnswer = async (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) {
@@ -366,6 +379,8 @@ export default function AnswerPage() {
       console.error('에러가 발생했습니다.', error);
     }
   };
+
+  // 개별 질문 삭제 함수
   const handleDeleteQuestion = async (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) {
@@ -389,6 +404,8 @@ export default function AnswerPage() {
       console.error('에러가 발생했습니다.', error);
     }
   };
+
+  // 전체 질문 삭제 함수
   const handleDeleteQuestionsAll = async () => {
     if (questions.length === 0) {
       console.error('질문이 없습니다!');
@@ -411,13 +428,14 @@ export default function AnswerPage() {
       console.error('전체 삭제 실패:', error);
     }
   };
+
+  // 좋아요 기능 함수
   const handleLike = async (id) => {
     const question = questions.find((q) => q.id === id);
-    const isLiked = question.isLiked || false;
-    if (!question) {
-      console.error('해당 질문을 찾을 수 없습니다.');
-      return;
-    }
+    if (!question) return;
+    if (clickedDislikes.includes(id)) return; // 싫어요 누른 상태에서 좋아요 못누르게
+    if (clickedLikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
+
     const questionId = question.id;
 
     try {
@@ -440,28 +458,30 @@ export default function AnswerPage() {
           q.id === id
             ? {
                 ...q,
-                like: isLiked ? q.like - 1 : q.like + 1, // 좋아요 이미 눌렀으면 -1, 아니면 +1
-                isLiked: !isLiked, // 좋아요 상태 반전
-                // 싫어요를 눌러둔 상태였으면 싫어요 취소(-1)
-                ...(q.isDisLiked && {
-                  dislike: q.dislike - 1,
-                  isDisLiked: false,
-                }),
+                like: q.like + 1,
               }
             : q
         )
       );
+      setClickedLikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedLikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
     }
   };
+
+  // 싫어요 기능 함수
   const handleDislike = async (id) => {
     const question = questions.find((q) => q.id === id);
-    const isDisLiked = question.isDisLiked || false;
-    if (!question) {
-      console.error('해당 질문을 찾을 수 없습니다.');
-      return;
-    }
+    if (!question) return;
+    if (clickedLikes.includes(id)) return; // 좋아요 누른 상태에서 싫어요 못누르게
+    if (clickedDislikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
     const questionId = question.id;
 
     try {
@@ -484,17 +504,19 @@ export default function AnswerPage() {
           q.id === id
             ? {
                 ...q,
-                dislike: isDisLiked ? q.dislike - 1 : q.dislike + 1, // 싫어요 이미 눌렀으면 -1, 아니면 +1
-                isDisLiked: !isDisLiked, // 싫어요 상태 반전
-                // 좋아요를 눌러둔 상태였으면 싫어요 취소(-1)
-                ...(q.isLiked && {
-                  like: q.like - 1,
-                  isLiked: false,
-                }),
+                dislike: q.dislike + 1,
               }
             : q
         )
       );
+      setClickedDislikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedDislikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
     }
@@ -572,14 +594,18 @@ export default function AnswerPage() {
                 onLike={() => handleLike(question.id)}
                 dislikeCount={question.dislike}
                 onDislike={() => handleDislike(question.id)}
-                isLiked={question.isLiked}
-                isDisLiked={question.isDisLiked}
+                isClickedLike={clickedLikes.includes(question.id)}
+                isClickedDislike={clickedDislikes.includes(question.id)}
               />
             </Card>
           );
         })}
 
-        <DeleteAllBtn onClick={handleDeleteQuestionsAll}>삭제하기</DeleteAllBtn>
+        {questions ? (
+          <DeleteAllBtn onClick={handleDeleteQuestionsAll}>
+            삭제하기
+          </DeleteAllBtn>
+        ) : null}
       </CardBox>
     </>
   );
