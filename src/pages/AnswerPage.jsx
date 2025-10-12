@@ -14,8 +14,6 @@ import FilledBtn from '../components/ButtonBox/FilledBtn';
 import ReactionBtns from '../components/Reaction/Reaction';
 import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Edit from '../components/Edit/Edit';
-import Modal from '../components/Modal/Modal';
-import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -216,7 +214,6 @@ export default function AnswerPage() {
   const [openCardId, setOpenCardId] = useState(null);
   const [editingCards, setEditingCards] = useState({});
   const [deletingCards, setDeletingCards] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -414,6 +411,94 @@ export default function AnswerPage() {
       console.error('전체 삭제 실패:', error);
     }
   };
+  const handleLike = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    const isLiked = question.isLiked || false;
+    if (!question) {
+      console.error('해당 질문을 찾을 수 없습니다.');
+      return;
+    }
+    const questionId = question.id;
+
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'like',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('좋아요 등록 실패');
+
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+                ...q,
+                like: isLiked ? q.like - 1 : q.like + 1, // 좋아요 이미 눌렀으면 -1, 아니면 +1
+                isLiked: !isLiked, // 좋아요 상태 반전
+                // 싫어요를 눌러둔 상태였으면 싫어요 취소(-1)
+                ...(q.isDisLiked && {
+                  dislike: q.dislike - 1,
+                  isDisLiked: false,
+                }),
+              }
+            : q
+        )
+      );
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+  const handleDislike = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    const isDisLiked = question.isDisLiked || false;
+    if (!question) {
+      console.error('해당 질문을 찾을 수 없습니다.');
+      return;
+    }
+    const questionId = question.id;
+
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'dislike',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('싫어요 등록 실패');
+
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+                ...q,
+                dislike: isDisLiked ? q.dislike - 1 : q.dislike + 1, // 싫어요 이미 눌렀으면 -1, 아니면 +1
+                isDisLiked: !isDisLiked, // 싫어요 상태 반전
+                // 좋아요를 눌러둔 상태였으면 싫어요 취소(-1)
+                ...(q.isLiked && {
+                  like: q.like - 1,
+                  isLiked: false,
+                }),
+              }
+            : q
+        )
+      );
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
 
   return (
     <>
@@ -484,7 +569,11 @@ export default function AnswerPage() {
               </AnswerBox>
               <ReactionBtns
                 likeCount={question.like}
+                onLike={() => handleLike(question.id)}
                 dislikeCount={question.dislike}
+                onDislike={() => handleDislike(question.id)}
+                isLiked={question.isLiked}
+                isDisLiked={question.isDisLiked}
               />
             </Card>
           );
@@ -492,14 +581,6 @@ export default function AnswerPage() {
 
         <DeleteAllBtn onClick={handleDeleteQuestionsAll}>삭제하기</DeleteAllBtn>
       </CardBox>
-
-      {/* 포탈 */}
-      <ModalOpenBtn onClick={() => setIsModalOpen(true)}>
-        모달 열기
-      </ModalOpenBtn>
-      <ModalPortal>
-        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
-      </ModalPortal>
     </>
   );
 }
