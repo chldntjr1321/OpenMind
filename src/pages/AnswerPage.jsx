@@ -601,11 +601,11 @@ export default function AnswerPage() {
           );
         })}
 
-        {questions ? (
+        {questions.length > 0 && (
           <DeleteAllBtn onClick={handleDeleteQuestionsAll}>
             삭제하기
           </DeleteAllBtn>
-        ) : null}
+        )}
       </CardBox>
     </>
   );
