@@ -1,11 +1,73 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import logoImage from '../assets/image/logo.svg';
 import illustrationImage from '../assets/image/v872batch5-nunny-04.png';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import FilledBtn from '../components/ButtonBox/FilledBtn';
 import InputField from '../components/InputField/InputField';
 
+const PageContainer = styled.div`
+  background: #F9F9F9;
+  min-height: 100vh;
+  position: relative;
+`;
+
+const Header = styled.header`
+  padding: 45px 130px 0;
+  text-align: right;
+`;
+
+const ButtonWrapper = styled.div`
+  display: inline-block;
+  cursor: pointer;
+`;
+
+const MainContainer = styled.main`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 69px;
+  margin: 0 auto;
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+`;
+
+const Logo = styled.img`
+  width: auto;
+  height: auto;
+`;
+
+const MainForm = styled.form`
+  width: 400px;
+  display: flex;
+  padding: 32px;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 16px;
+  background: #FFFFFF;
+`;
+
+const ButtonContainer = styled.div`
+  cursor: pointer;
+`;
+
+const MainIllustration = styled.div`
+  width: 100%;
+  height: 627px;
+  position: absolute;
+  top: 205px;
+  z-index: 0;
+  background-image: url(${illustrationImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+`;
+
 function MainPage() {
+  const [name, setName] = useState('');
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -24,6 +86,7 @@ function MainPage() {
     });
 
     const data = await response.json();
+    localStorage.setItem('userId', data.id);
     navigate(`/post/${data.id}/answer`);
   };
 
@@ -32,89 +95,31 @@ function MainPage() {
   };
 
   return (
-    <div className="page-container">
-      <style>{`
-        :root {
-          --grayscale20: #F9F9F9;
-          --grayscale10: #FFFFFF;
-          --grayscale40: #818181;
-          --brown40: #542F1A;
-        }
-
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        .page-container {
-          background: var(--grayscale20);
-          min-height: 100vh;
-        }
-
-        .header {
-          padding: 45px 130px 0;
-          text-align: right;
-        }
-
-        .main-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding-top: 69px;
-          margin: 0 auto;
-          gap: 24px;
-          position: relative;
-          z-index: 2;
-        }
-
-        .main-form {
-          width: 400px;
-          display: flex;
-          padding: 32px;
-          flex-direction: column;
-          gap: 16px;
-          border-radius: 16px;
-          background: var(--grayscale10);
-        }
-
-        .main-illustration {
-          width: 100%;
-          height: 627px;
-          position: absolute;
-          top: 205px;
-          z-index: 0;
-          background-image: url(${illustrationImage});
-          background-size: cover;
-          background-position: center;
-          background-repeat: relative;
-        }
-      `}</style>
-
-      <header className="header">
-        <div onClick={handleGoToAsk} style={{ display: 'inline-block', cursor: 'pointer' }}>
+    <PageContainer>
+      <Header>
+        <ButtonWrapper onClick={handleGoToAsk}>
           <OutlineBtn btnText="질문하러 가기" />
-        </div>
-      </header>
+        </ButtonWrapper>
+      </Header>
 
-      <main className="main-container">
-        <div className="main-logo">
-          <img src={logoImage} alt="OpenMind 로고" />
+      <MainContainer>
+        <div>
+          <Logo src={logoImage} alt="OpenMind 로고" />
         </div>
 
-        <form className="main-form" onSubmit={handleSubmit}>
+        <MainForm onSubmit={handleSubmit}>
           <InputField 
             value={name}
             onChange={handleInputChange}
           />
-          <div onClick={handleSubmit}>
+          <ButtonContainer onClick={handleSubmit}>
             <FilledBtn btnText="질문 받기" />
-          </div>
-        </form>
-      </main>
-      <div className="main-illustration"></div>
-    </div>
+          </ButtonContainer>
+        </MainForm>
+      </MainContainer>
+
+      <MainIllustration />
+    </PageContainer>
   );
 }
 
