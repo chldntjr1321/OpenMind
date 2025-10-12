@@ -12,22 +12,20 @@ const ModalBox = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #ffffff;
+  width: calc(100% - 46px);
+  min-height: 423px;
   max-width: 612px;
-  min-width: 327px;
-  width: 100%;
+  height : clamp(423px, calc(423px + (100vw - 768px) * -0.37), 568px);
   border-radius: 24px;
-  padding: 40px 40px 70px 40px;
+  padding: 40px;
+  box-sizing: border-box;
   box-shadow: 0 16px 20px 0 rgba(48, 48, 48, 0.62);
   z-index: 9999;
   img {
     width: 28px;
   }
   @media (max-width: 375px) {
-    min-height: 568px;
-    width: auto;
-    left: 25px;
-    right: 25px;
-    transform: translateY(-50%);
+    max-height: 568px;
     padding: 24px;
   }
 `;
