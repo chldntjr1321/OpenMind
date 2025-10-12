@@ -4,7 +4,7 @@ import CloseIcon from '../../assets/close.svg';
 import ProfileImg from '../../assets/profile.svg';
 import InputTextArea from '../InputTextArea/InputTextArea';
 import FilledBtn from '../ButtonBox/FilledBtn';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const ModalBox = styled.div`
   position: fixed;
@@ -12,22 +12,20 @@ const ModalBox = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #ffffff;
+  width: calc(100% - 46px);
+  min-height: 423px;
   max-width: 612px;
-  min-width: 327px;
-  width: 100%;
+  height : clamp(423px, calc(423px + (100vw - 768px) * -0.37), 568px);
   border-radius: 24px;
-  padding: 40px 40px 70px 40px;
+  padding: 40px;
+  box-sizing: border-box;
   box-shadow: 0 16px 20px 0 rgba(48, 48, 48, 0.62);
   z-index: 9999;
   img {
     width: 28px;
   }
   @media (max-width: 375px) {
-    min-height: 568px;
-    width: auto;
-    left: 25px;
-    right: 25px;
-    transform: translateY(-50%);
+    max-height: 568px;
     padding: 24px;
   }
 `;
@@ -89,6 +87,9 @@ const Overlay = styled.div`
 export default function Modal({ onClose }) {
   const [isDisabled, setIsDisabled] = useState(true);
   const [inputValue, setInputValue] = useState('');
+
+  const textareaRef = useRef(null);
+
   useEffect(() => {
     if (inputValue.trim() === '') {
       setIsDisabled(true);
@@ -96,6 +97,13 @@ export default function Modal({ onClose }) {
       setIsDisabled(false);
     }
   }, [inputValue]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
   return (
     <Overlay onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
@@ -113,6 +121,7 @@ export default function Modal({ onClose }) {
         </RecieveUser>
         <ContentBox>
           <InputTextArea
+            ref={textareaRef}
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);

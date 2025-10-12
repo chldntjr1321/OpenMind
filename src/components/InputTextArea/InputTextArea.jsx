@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { forwardRef } from 'react';
 
 // const inputContents = '질문'; // 내용, 질문, 답변 등 입력할 컨텐츠를 넣어주세요
 const TextArea = styled.textarea`
@@ -26,11 +27,12 @@ const TextArea = styled.textarea`
   }
 `;
 
-function InputTextArea({ value, onChange }) {
+function InputTextArea({ value, onChange }, ref) {
   return (
     <>
       <div>
         <TextArea
+          ref={ref}
           placeholder={`질문을 입력하세요`}
           alt={`질문 입력란`}
           value={value}
@@ -41,4 +43,4 @@ function InputTextArea({ value, onChange }) {
   );
 }
 
-export default InputTextArea;
+export default forwardRef(InputTextArea);
