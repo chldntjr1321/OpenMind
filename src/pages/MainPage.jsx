@@ -84,18 +84,31 @@ function MainPage() {
 
     if (!name.trim()) return;
 
-    const response = await fetch(
-      'https://openmind-api.vercel.app/19-1/subjects/',
-      {
+    try {
+      const response = await fetch('https://openmind-api.vercel.app/19-1/subjects/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim() }),
-      }
-    );
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          name: name.trim() 
+        }),
+      });
 
-    const data = await response.json();
-    localStorage.setItem('userId', data.id);
-    navigate(`/post/${data.id}/answer`);
+      if (!response.ok) {
+        throw new Error('계정 생성에 실패했습니다.');
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem('userId', data.id);
+
+      navigate(`/post/${data.id}/answer`);
+      
+    } catch (error) {
+      console.error('계정 생성 오류:', error);
+      alert('계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleGoToAsk = () => {
