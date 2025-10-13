@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AnswerPage from './pages/AnswerPage';
 import MainPage from './pages/MainPage';
 import ListPage from './pages/ListPage';
+import { LoadingProvider } from './components/Loading/Loading'; // App 컴포넌트를 LoadingProvider로 감싸서 앱 전체에서 로딩 상태를 사용할 수 있도록 설정
 
 function App() {
   return (
-    <>
+    <LoadingProvider>
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
@@ -21,7 +22,7 @@ function App() {
           <Route path="*" element={<p>잘못된 주소를 입력하셨습니다!</p>} />
         </Routes>
       </BrowserRouter>
-    </>
+    </LoadingProvider>
   );
 }
 export default App;

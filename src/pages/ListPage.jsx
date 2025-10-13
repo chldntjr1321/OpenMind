@@ -6,6 +6,7 @@ import Dropdown from '../components/Dropdown/Dropdown';
 import UserCard from '../components/UserCard/UserCard';
 import Pagenation from '../components/Pagenation/Pagenation';
 import { Link } from 'react-router-dom';
+import { useLoading } from '../components/Loading/Loading';
 
 const HeaderWrap = styled.div`
   padding: 0 130px 40px 130px;
@@ -75,6 +76,7 @@ function ListPage() {
   const [subjects, setSubjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const { isLoading, setIsLoading } = useLoading();
   const ITEMS_PER_PAGE = 8;
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
@@ -84,7 +86,9 @@ function ListPage() {
   }, [selectedOption, currentPage]);
 
   const fetchSubjects = async () => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/19-1/subjects/?limit=${ITEMS_PER_PAGE}&offset=${
           (currentPage - 1) * ITEMS_PER_PAGE
@@ -108,6 +112,8 @@ function ListPage() {
       setSubjects(sortedResults);
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
