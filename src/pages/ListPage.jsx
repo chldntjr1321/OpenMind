@@ -1,15 +1,83 @@
-
 import { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import logoImage from '../assets/image/logo.svg';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import Dropdown from '../components/Dropdown/Dropdown';
 import UserCard from '../components/UserCard/UserCard';
 import Pagenation from '../components/Pagenation/Pagenation';
+import { Link } from 'react-router-dom';
+
+const HeaderWrap = styled.div`
+  padding: 0 130px 40px 130px;
+  margin: 0 auto;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Logo = styled.img`
+  height: 57px;
+  width: auto;
+  cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+  margin-top: -8px;
+  cursor: pointer;
+`;
+
+const ListContainer = styled.main`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f9f9f9;
+`;
+
+const ListWrap = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+`;
+
+const ListBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+`;
+
+const ListTitle = styled.h1`
+  font-size: 40px;
+  font-weight: 400;
+  color: #000000;
+`;
+
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 220px);
+  gap: 20px;
+  justify-content: center;
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 8px;
+`;
 
 function ListPage() {
   const [selectedOption, setSelectedOption] = useState('recent');
   const [subjects, setSubjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const ITEMS_PER_PAGE = 8;
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   useEffect(() => {
     fetchSubjects();
@@ -18,26 +86,29 @@ function ListPage() {
   const fetchSubjects = async () => {
     try {
       const response = await fetch(
-        `https://openmind-api.vercel.app/19-1/subjects/?limit=8&offset=${(currentPage - 1) * 8}`
+        `https://openmind-api.vercel.app/19-1/subjects/?limit=${ITEMS_PER_PAGE}&offset=${
+          (currentPage - 1) * ITEMS_PER_PAGE
+        }`
       );
       const data = await response.json();
-      
+
+      setTotalCount(data.count);
       let sortedResults = data.results || [];
-      
+
       if (selectedOption === 'name') {
-        sortedResults = sortedResults.sort((a, b) => a.name.localeCompare(b.name));
+        sortedResults = sortedResults.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
       } else {
-        sortedResults = sortedResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        sortedResults = sortedResults.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
       }
-      
+
       setSubjects(sortedResults);
     } catch (error) {
       console.error('Error:', error);
     }
-  };
-
-  const handleLogoClick = () => {
-    window.location.href = '/';
   };
 
   const handleAnswerClick = () => {
@@ -50,124 +121,48 @@ function ListPage() {
   };
 
   return (
-    <>
-      <style>{`
-        :root {
-          --grayscale60: #000000;
-          --grayscale50: #515151;
-          --grayscale40: #818181;
-          --grayscale30: #CFCFCF; 
-          --grayscale20: #F9F9F9;
-          --grayscale10: #FFFFFF;
-          --brown50: #341909;
-          --brown40: #542F1A;
-          --brown30: #C7BBB5;
-          --brown20: #E4D5C9;
-          --brown10: #F5F1EE;
-          --blue: #1877F2;
-          --yellow: #FEE500;
-          --red: #B93333;
-        }
-
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        .header-wrap {
-          padding: 49px 130px 45px;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .logo {
-          height: 57px;
-          width: auto;
-          cursor: pointer;
-        }
-
-        .btn-wrapper {
-          margin-top: -8px;
-        }
-
-        .list-wrap {
-          max-width: 1200px;
-          margin: 0 auto;
-          display: flex;
-          flex-direction: column;
-          gap: 30px;
-        }
-
-        .list-box {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .list-title {
-          font-size: 40px;
-          font-weight: 400;
-          color: var(--grayscale60);
-        }
-
-        .card-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, 220px);
-          gap: 20px;
-          justify-content: center;
-        }
-
-        .pagination {
-          display: flex;
-          justify-content: center;
-          gap: 8px;
-        }
-      `}</style>
-
+    <ListContainer>
       <header>
-        <div className="header-wrap">
-          <img 
-            src={logoImage}
-            alt="OpenMind 로고" 
-            className="logo"
-            onClick={handleLogoClick}
-          />
-          <div className="btn-wrapper" onClick={handleAnswerClick}>
+        <HeaderWrap>
+          <Link to="/">
+            <Logo src={logoImage} alt="OpenMind 로고" />
+          </Link>
+          <ButtonWrapper onClick={handleAnswerClick}>
             <OutlineBtn btnText="답변하러 가기" />
-          </div>
-        </div>
+          </ButtonWrapper>
+        </HeaderWrap>
       </header>
 
-      <main className="list-container">
-        <div className="list-wrap">
-          <div className="list-box">
-            <h1 className="list-title">누구에게 질문할까요?</h1>
-            <Dropdown 
-              selectedOption={selectedOption}
-              setSelectedOption={setSelectedOption}
+      <ListWrap>
+        <ListBox>
+          <ListTitle>누구에게 질문할까요?</ListTitle>
+          <Dropdown
+            selectedOption={selectedOption}
+            setSelectedOption={setSelectedOption}
+          />
+        </ListBox>
+        <div>
+          <CardGrid>
+            {subjects.map((subject) => (
+              <UserCard
+                key={subject.id}
+                name={subject.name}
+                questionCount={subject.questionCount}
+              />
+            ))}
+          </CardGrid>
+          <PaginationWrapper>
+            <Pagenation
+              totalPage={totalPages}
+              currentPage={currentPage}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+              }}
             />
-          </div>
-          <div className="card-box">
-            <div className="card-grid" id="cardGrid">
-              {subjects.map((subject) => (
-                <UserCard 
-                  key={subject.id}
-                  name={subject.name}
-                  questionCount={subject.questionCount}
-                />
-              ))}
-            </div>
-            <div className="pagination" id="pagination">
-              <Pagenation/>
-            </div>
-          </div>
+          </PaginationWrapper>
         </div>
-      </main>
-    </>
+      </ListWrap>
+    </ListContainer>
   );
 }
 

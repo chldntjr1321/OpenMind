@@ -1,0 +1,13 @@
+[33mf54aba5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/main-list-page[m[33m)[m HEAD@{0}: commit: 수정 및 카드 구현
+[33m8ceac83[m[33m ([m[1;31morigin/feature/main-list-page[m[33m)[m HEAD@{1}: commit: 메인 페이지 및 리스트 페이지 완성
+[33mf231689[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{2}: checkout: moving from develop to feature/main-list-page
+[33mf231689[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{3}: reset: moving to HEAD
+[33mf231689[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{4}: pull origin develop: Fast-forward
+[33mbf7ac8e[m HEAD@{5}: checkout: moving from feature/typography to develop
+[33m6ca96a7[m[33m ([m[1;31morigin/feature/typography[m[33m, [m[1;32mfeature/typography[m[33m)[m HEAD@{6}: commit (merge): Merge branch 'develop' of https://github.com/chldntjr1321/OpenMind into feature/typography
+[33m656c7d3[m HEAD@{7}: commit: feat: 폰트 컴포넌트
+[33mb1884b9[m[33m ([m[1;31morigin/feature/main-screen[m[33m, [m[1;32mfeature/main-screen[m[33m)[m HEAD@{8}: checkout: moving from feature/main-screen to feature/typography
+[33mb1884b9[m[33m ([m[1;31morigin/feature/main-screen[m[33m, [m[1;32mfeature/main-screen[m[33m)[m HEAD@{9}: commit: feat: 메인 화면 및 질문리스트 UI 구현 및 스타일 적용
+[33mf8dab16[m HEAD@{10}: commit: feat: 메인 화면 UI 구현 및 스타일 적용
+[33ma63b3c0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{11}: checkout: moving from main to feature/main-screen
+[33ma63b3c0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{12}: clone: from https://github.com/chldntjr1321/OpenMind.git

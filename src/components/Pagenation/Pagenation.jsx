@@ -18,6 +18,7 @@ const PageBar = styled.div`
   }
   & .disabled {
     pointer-events: none;
+    cursor: not-allowed;
   }
   & .active {
     color: #542f1a;
@@ -30,7 +31,7 @@ export default function Pagenation({ totalPage, currentPage, onPageChange }) {
       { length: (stop - start) / step + 1 },
       (_, i) => start + i * step
     );
-  const pages = range(1, totalPage, 1);
+  const pages = totalPage > 0 ? range(1, totalPage, 1) : [1];
 
   return (
     <PageBar>
@@ -44,7 +45,7 @@ export default function Pagenation({ totalPage, currentPage, onPageChange }) {
             <li
               key={page}
               className={currentPage === page ? 'active' : ''}
-              onClick={onPageChange(page)}
+              onClick={() => onPageChange(page)}
             >
               {page}
             </li>

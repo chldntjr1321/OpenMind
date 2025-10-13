@@ -3,6 +3,10 @@ import { useState } from 'react';
 import ArrowDown from '../../assets/arrow-down.svg';
 import ArrowUp from '../../assets/arrow-up.svg';
 
+const Wrapper = styled.div`
+  position: relative;
+`;
+
 const CurrentOption = styled.div`
   width: fit-content;
   border: 1px solid ${({ isOpen }) => (isOpen ? '#000000' : '#818181')};
@@ -32,8 +36,12 @@ const CurrentOption = styled.div`
 `;
 
 const OptionBox = styled.div`
+  position: absolute;
+  top: 100%;
+  z-index: 999;
   width: fit-content;
   background-color: #ffffff;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -61,7 +69,7 @@ export default function Dropdown({ selectedOption, setSelectedOption }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
+    <Wrapper>
       <CurrentOption
         isOpen={isOpen}
         onClick={() => {
@@ -98,6 +106,6 @@ export default function Dropdown({ selectedOption, setSelectedOption }) {
           </ul>
         </OptionBox>
       )}
-    </>
+    </Wrapper>
   );
 }
