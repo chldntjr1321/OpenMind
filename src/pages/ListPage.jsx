@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import logoImage from '../assets/image/logo.svg';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import Dropdown from '../components/Dropdown/Dropdown';
 import UserCard from '../components/UserCard/UserCard';
 import Pagenation from '../components/Pagenation/Pagenation';
-import { Link } from 'react-router-dom';
 
 const HeaderWrap = styled.div`
   padding: 0 130px 40px 130px;
@@ -63,6 +63,10 @@ const CardGrid = styled.div`
   justify-content: center;
 `;
 
+const CardWrapper = styled.div`
+  cursor: pointer;
+`;
+
 const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -75,6 +79,7 @@ function ListPage() {
   const [subjects, setSubjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const navigate = useNavigate();
   const ITEMS_PER_PAGE = 8;
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
@@ -111,12 +116,16 @@ function ListPage() {
     }
   };
 
+  const handleCardClick = (id) => {
+    navigate(`/post/${id}`);
+  };
+
   const handleAnswerClick = () => {
     const userId = localStorage.getItem('userId');
     if (userId) {
-      window.location.href = `/post/${userId}/answer`;
+      navigate(`/post/${userId}/answer`);
     } else {
-      window.location.href = '/';
+      navigate('/');
     }
   };
 
@@ -144,11 +153,12 @@ function ListPage() {
         <div>
           <CardGrid>
             {subjects.map((subject) => (
-              <UserCard
-                key={subject.id}
-                name={subject.name}
-                questionCount={subject.questionCount}
-              />
+              <CardWrapper key={subject.id} onClick={() => handleCardClick(subject.id)}>
+                <UserCard
+                  name={subject.name}
+                  questionCount={subject.questionCount}
+                />
+              </CardWrapper>
             ))}
           </CardGrid>
           <PaginationWrapper>
