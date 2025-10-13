@@ -59,18 +59,6 @@ const ButtonContainer = styled.div`
   cursor: pointer;
 `;
 
-const MainIllustration = styled.div`
-  width: 100%;
-  height: 627px;
-  position: absolute;
-  top: 205px;
-  z-index: 0;
-  /* background-image: url(${illustrationImage});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat; */
-`;
-
 function MainPage() {
   const [name, setName] = useState('');
   const navigate = useNavigate();
@@ -135,8 +123,6 @@ function MainPage() {
           </ButtonContainer>
         </MainForm>
       </MainContainer>
-
-      <MainIllustration />
     </PageContainer>
   );
 }
