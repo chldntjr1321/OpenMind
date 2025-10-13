@@ -17,6 +17,7 @@ const Like = styled.div`
   gap: 6px;
   padding-top: 24px;
   cursor: pointer;
+  user-select: none;
   & > img {
     width: 16px;
     height: 16px;
@@ -39,31 +40,30 @@ const DisLike = styled(Like)``;
 export default function Reaction({
   likeCount,
   dislikeCount,
-  isDisLike,
   onLike,
   onDislike,
+  isClickedLike,
+  isClickedDislike,
 }) {
   return (
     <>
       <IconBox>
-        <Like>
+        <Like onClick={onLike}>
           <img
-            src={likeCount > 0 ? ActiveLike : InActiveLike}
+            src={isClickedLike ? ActiveLike : InActiveLike}
             alt="좋아요 버튼"
-            onClick={onLike}
           />
-          <p className={likeCount > 0 ? 'active--like' : null}>
-            {likeCount > 0 ? `좋아요 ${likeCount}` : `좋아요`}
+          <p className={isClickedLike ? 'active--like' : null}>
+            {likeCount ? `좋아요 ${likeCount}` : `좋아요`}
           </p>
         </Like>
-        <DisLike>
+        <DisLike onClick={onDislike}>
           <img
-            src={isDisLike > 0 ? ActiveDisLike : InActiveDisLike}
+            src={isClickedDislike ? ActiveDisLike : InActiveDisLike}
             alt="싫어요 버튼"
-            onClick={onDislike}
           />
-          <p className={isDisLike > 0 ? 'active--dislike' : null}>
-            {dislikeCount > 0 ? `싫어요 ${dislikeCount}` : `싫어요`}
+          <p className={isClickedDislike ? 'active--dislike' : null}>
+            {dislikeCount ? `싫어요 ${dislikeCount}` : `싫어요`}
           </p>
         </DisLike>
       </IconBox>

@@ -14,8 +14,6 @@ import FilledBtn from '../components/ButtonBox/FilledBtn';
 import ReactionBtns from '../components/Reaction/Reaction';
 import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Edit from '../components/Edit/Edit';
-import Modal from '../components/Modal/Modal';
-import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -216,7 +214,15 @@ export default function AnswerPage() {
   const [openCardId, setOpenCardId] = useState(null);
   const [editingCards, setEditingCards] = useState({});
   const [deletingCards, setDeletingCards] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // state에 함수를 넣으면 복잡한 계산을 매 렌더링마다 하지 않아도 된다고 합니다~!
+  const [clickedLikes, setClickedLikes] = useState(() => {
+    const likes = localStorage.getItem('clickedLikes');
+    return likes ? JSON.parse(likes) : [];
+  });
+  const [clickedDislikes, setClickedDislikes] = useState(() => {
+    const dislikes = localStorage.getItem('clickedDislikes');
+    return dislikes ? JSON.parse(dislikes) : [];
+  });
   const { id } = useParams();
 
   useEffect(() => {
@@ -247,6 +253,8 @@ export default function AnswerPage() {
   const handleInputChange = (id, value) => {
     setInputValues((prev) => ({ ...prev, [id]: value }));
   };
+
+  // 수정 버튼 클릭 시 동작 함수
   const handleEditClick = (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) return;
@@ -297,6 +305,8 @@ export default function AnswerPage() {
       );
     }
   };
+
+  // 답변 생성 함수
   const handleCreateAnswer = async (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) {
@@ -369,6 +379,8 @@ export default function AnswerPage() {
       console.error('에러가 발생했습니다.', error);
     }
   };
+
+  // 개별 질문 삭제 함수
   const handleDeleteQuestion = async (id) => {
     const question = questions.find((q) => q.id === id);
     if (!question) {
@@ -392,6 +404,8 @@ export default function AnswerPage() {
       console.error('에러가 발생했습니다.', error);
     }
   };
+
+  // 전체 질문 삭제 함수
   const handleDeleteQuestionsAll = async () => {
     if (questions.length === 0) {
       console.error('질문이 없습니다!');
@@ -412,6 +426,99 @@ export default function AnswerPage() {
       setQuestions([]); // 화면에서 질문들 모두 제거
     } catch (error) {
       console.error('전체 삭제 실패:', error);
+    }
+  };
+
+  // 좋아요 기능 함수
+  const handleLike = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) return;
+    if (clickedDislikes.includes(id)) return; // 싫어요 누른 상태에서 좋아요 못누르게
+    if (clickedLikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
+
+    const questionId = question.id;
+
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'like',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('좋아요 등록 실패');
+
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+                ...q,
+                like: q.like + 1,
+              }
+            : q
+        )
+      );
+      setClickedLikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedLikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+
+  // 싫어요 기능 함수
+  const handleDislike = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) return;
+    if (clickedLikes.includes(id)) return; // 좋아요 누른 상태에서 싫어요 못누르게
+    if (clickedDislikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
+    const questionId = question.id;
+
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'dislike',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('싫어요 등록 실패');
+
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+                ...q,
+                dislike: q.dislike + 1,
+              }
+            : q
+        )
+      );
+      setClickedDislikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedDislikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
     }
   };
 
@@ -484,22 +591,22 @@ export default function AnswerPage() {
               </AnswerBox>
               <ReactionBtns
                 likeCount={question.like}
+                onLike={() => handleLike(question.id)}
                 dislikeCount={question.dislike}
+                onDislike={() => handleDislike(question.id)}
+                isClickedLike={clickedLikes.includes(question.id)}
+                isClickedDislike={clickedDislikes.includes(question.id)}
               />
             </Card>
           );
         })}
 
-        <DeleteAllBtn onClick={handleDeleteQuestionsAll}>삭제하기</DeleteAllBtn>
+        {questions.length > 0 && (
+          <DeleteAllBtn onClick={handleDeleteQuestionsAll}>
+            삭제하기
+          </DeleteAllBtn>
+        )}
       </CardBox>
-
-      {/* 포탈 */}
-      <ModalOpenBtn onClick={() => setIsModalOpen(true)}>
-        모달 열기
-      </ModalOpenBtn>
-      <ModalPortal>
-        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} />}
-      </ModalPortal>
     </>
   );
 }
