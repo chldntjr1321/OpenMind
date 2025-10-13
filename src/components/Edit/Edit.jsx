@@ -3,6 +3,7 @@ import DefaultEditIcon from '../../assets/edit(gray).svg';
 import HoverEditIcon from '../../assets/edit(black).svg';
 import ActiveEditIcon from '../../assets/edit(blue).svg';
 import DeleteIcon from '../../assets/icon_x.svg';
+import RejectIcon from '../../assets/rejection.svg';
 
 const OptionBox = styled.div`
   position: absolute;
@@ -81,9 +82,13 @@ export default function Edit({
   onEdit,
   isEditActive,
   setIsEditActive,
+  isAnswered,
   onDelete,
   isDeleteActive,
   setIsDeleteActive,
+  onReject,
+
+  setOpenCardId,
 }) {
   return (
     <>
@@ -92,8 +97,10 @@ export default function Edit({
           <li
             onClick={(e) => {
               e.stopPropagation();
+              if (!isAnswered) return;
               setIsEditActive(!isEditActive);
               onEdit();
+              setOpenCardId(null);
             }}
             className={isEditActive ? 'selected' : ''}
           >
@@ -121,11 +128,22 @@ export default function Edit({
               e.stopPropagation();
               setIsDeleteActive(!isDeleteActive);
               onDelete();
+              setOpenCardId(null);
             }}
             className={isDeleteActive ? 'selected' : ''}
           >
             <img src={DeleteIcon} alt="삭제하기 버튼" className="delete" />
             삭제하기
+          </li>
+          <li
+            onClick={(e) => {
+              e.stopPropagation();
+              onReject();
+              setOpenCardId(null);
+            }}
+          >
+            <img src={RejectIcon} alt="거절하기 버튼" className="rejected" />
+            거절하기
           </li>
         </ul>
       </OptionBox>
