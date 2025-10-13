@@ -11,6 +11,7 @@ const Card = styled.div`
   padding: 20px;
   border: 1px solid #818181;
   border-radius: 16px;
+  cursor: pointer;
 `;
 const ProfileBox = styled.div`
   display: flex;

@@ -5,10 +5,12 @@ import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import Dropdown from '../components/Dropdown/Dropdown';
 import UserCard from '../components/UserCard/UserCard';
 import Pagenation from '../components/Pagenation/Pagenation';
+import { Link } from 'react-router-dom';
 
 const HeaderWrap = styled.div`
-  padding: 49px 130px 45px;
+  padding: 0 130px 40px 130px;
   margin: 0 auto;
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,8 +28,11 @@ const ButtonWrapper = styled.div`
 `;
 
 const ListContainer = styled.main`
-  background: #F9F9F9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-height: 100vh;
+  background: #f9f9f9;
 `;
 
 const ListWrap = styled.div`
@@ -53,7 +58,7 @@ const ListTitle = styled.h1`
 
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, 220px);
+  grid-template-columns: repeat(4, 220px);
   gap: 20px;
   justify-content: center;
 `;
@@ -81,31 +86,29 @@ function ListPage() {
   const fetchSubjects = async () => {
     try {
       const response = await fetch(
-        `https://openmind-api.vercel.app/19-1/subjects/?limit=${ITEMS_PER_PAGE}&offset=${(currentPage - 1) * ITEMS_PER_PAGE}`
+        `https://openmind-api.vercel.app/19-1/subjects/?limit=${ITEMS_PER_PAGE}&offset=${
+          (currentPage - 1) * ITEMS_PER_PAGE
+        }`
       );
       const data = await response.json();
-      
+
       setTotalCount(data.count);
       let sortedResults = data.results || [];
-      
+
       if (selectedOption === 'name') {
-        sortedResults = sortedResults.sort((a, b) => a.name.localeCompare(b.name));
+        sortedResults = sortedResults.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
       } else {
-        sortedResults = sortedResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        sortedResults = sortedResults.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
       }
-      
+
       setSubjects(sortedResults);
     } catch (error) {
       console.error('Error:', error);
     }
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleLogoClick = () => {
-    window.location.href = '/';
   };
 
   const handleAnswerClick = () => {
@@ -121,11 +124,9 @@ function ListPage() {
     <ListContainer>
       <header>
         <HeaderWrap>
-          <Logo 
-            src={logoImage}
-            alt="OpenMind 로고" 
-            onClick={handleLogoClick}
-          />
+          <Link to="/">
+            <Logo src={logoImage} alt="OpenMind 로고" />
+          </Link>
           <ButtonWrapper onClick={handleAnswerClick}>
             <OutlineBtn btnText="답변하러 가기" />
           </ButtonWrapper>
@@ -135,7 +136,7 @@ function ListPage() {
       <ListWrap>
         <ListBox>
           <ListTitle>누구에게 질문할까요?</ListTitle>
-          <Dropdown 
+          <Dropdown
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
           />
@@ -143,7 +144,7 @@ function ListPage() {
         <div>
           <CardGrid>
             {subjects.map((subject) => (
-              <UserCard 
+              <UserCard
                 key={subject.id}
                 name={subject.name}
                 questionCount={subject.questionCount}
@@ -154,7 +155,9 @@ function ListPage() {
             <Pagenation
               totalPage={totalPages}
               currentPage={currentPage}
-              onPageChange={handlePageChange}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+              }}
             />
           </PaginationWrapper>
         </div>

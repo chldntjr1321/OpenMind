@@ -8,8 +8,13 @@ import FilledBtn from '../components/ButtonBox/FilledBtn';
 import InputField from '../components/InputField/InputField';
 
 const PageContainer = styled.div`
-  background: #F9F9F9;
-  min-height: 100vh;
+  background-image: url(${illustrationImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+
+  height: 100vh;
   position: relative;
 `;
 
@@ -47,7 +52,7 @@ const MainForm = styled.form`
   flex-direction: column;
   gap: 16px;
   border-radius: 16px;
-  background: #FFFFFF;
+  background: #ffffff;
 `;
 
 const ButtonContainer = styled.div`
@@ -60,10 +65,10 @@ const MainIllustration = styled.div`
   position: absolute;
   top: 205px;
   z-index: 0;
-  background-image: url(${illustrationImage});
+  /* background-image: url(${illustrationImage});
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat; */
 `;
 
 function MainPage() {
@@ -79,11 +84,14 @@ function MainPage() {
 
     if (!name.trim()) return;
 
-    const response = await fetch('https://openmind-api.vercel.app/19-1/subjects/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim() }),
-    });
+    const response = await fetch(
+      'https://openmind-api.vercel.app/19-1/subjects/',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim() }),
+      }
+    );
 
     const data = await response.json();
     localStorage.setItem('userId', data.id);
@@ -108,10 +116,7 @@ function MainPage() {
         </div>
 
         <MainForm onSubmit={handleSubmit}>
-          <InputField 
-            value={name}
-            onChange={handleInputChange}
-          />
+          <InputField value={name} onChange={handleInputChange} />
           <ButtonContainer onClick={handleSubmit}>
             <FilledBtn btnText="질문 받기" />
           </ButtonContainer>
