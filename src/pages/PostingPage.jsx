@@ -304,6 +304,50 @@ function PostingPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const userData = {
+    id: 2,
+    name: "나도여행갈래",
+    imageSource: profileImg,
+    questionCount: 3,
+    createdAt: "2주전"
+  }
+  const questionData = [
+    {
+      id: 1,
+      subjectId: 23,
+      content: "가장 좋아하는 동물이 궁금해요!",
+      like: 0,
+      dislike: 0,
+      createdAt: "1주전",
+      answer: {
+        id: 22,
+        content: "강아지를 좋아합니다",
+        isRejected: false,
+        createdAt: "2일전"
+      }
+    },
+    {
+      id: 2,
+      content: "지금 잠이 와요?",
+      like: 5,
+      dislike: 1,
+      createdAt: "6일전",
+      answer: null
+    },
+    {
+      id: 3,
+      content: "현재 통장 잔고는?",
+      like: 3,
+      dislike: 0,
+      createdAt: "3일전",
+      answer: {
+        content: "",
+        isRejected: true,
+        createdAt: "2일전"
+      }
+    }
+  ]
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 375) {
@@ -331,7 +375,7 @@ function PostingPage() {
             <img src={profileImg} alt="프로필 이미지" />
           </ProfileImg>
           <ProfileUsername>
-            아초는고양이
+            {userData.name}
           </ProfileUsername>
           <ShareIconArea>
             <img src={linkIcon} alt="링크 URL 공유 아이콘" />
@@ -341,72 +385,75 @@ function PostingPage() {
         </ProfileArea>
       </PostingHeader>
       <PostingBody>
-        <PostingArea>
-          <span className="questionCountText"><img src={messageIcon} alt="메시지 아이콘" />개의 질문이 있습니다</span>
-          <FeedCard>
-            <FeedBadge>
-              <Badge />
-            </FeedBadge>
-            <QuestionFeedCard />
-            <AnswerFeed>
-              <AnswerLeft>
-                <AnswerProfileImg>
-                  <img src={profileImg} alt="프로필 이미지" />
-                </AnswerProfileImg>
-              </AnswerLeft>
-              <AnswerRight>
-                <AnswerUsername>
-                  <span>아초는고양이</span>
-                  <div>
-                    <UpdatedTime>2주전</UpdatedTime>
-                  </div>
-                </AnswerUsername>
-                <AnswerContents>
-                  <div>그들을 불러 귀는 이상의 오직 피고, 가슴이 이상, 못할 봄바람이다. 찾아다녀도, 전인 방황하였으며, 대한 바이며, 이것이야말로 가치를 청춘의 따뜻한 그리하였는가? 몸이 열락의 청춘의 때문이다. 천고에 피어나는 간에 밝은 이상, 인생의 만물은 피다. 대중을 이성은 방황하여도, 그리하였는가? 크고 평화스러운 품에 방황하였으며, 말이다. 이상은 들어 예수는 크고 긴지라 역사를 피다. 얼음에 있음으로써 꽃 보배를 곧 가는 교향악이다. 우는 새 예가 우리의 것은 피다. 피가 그것을 어디 앞이 기쁘며, 이상의 열락의 위하여서 끝까지 것이다. 있는 봄바람을 방황하여도, 우리의 것은 작고 아니한 영원히 듣기만 운다.</div>
-                </AnswerContents>
-              </AnswerRight>
-            </AnswerFeed>
-            <Reaction />
-          </FeedCard>
-          <FeedCard>
-            <FeedBadge>
-              <Badge />
-            </FeedBadge>
-            <QuestionFeedCard />
-            <Reaction />
-          </FeedCard>
-          <FeedCard>
-            <FeedBadge>
-              <Badge />
-            </FeedBadge>
-            <QuestionFeedCard />
-            <AnswerFeed>
-              <AnswerLeft>
-                <AnswerProfileImg>
-                  <img src={profileImg} alt="프로필 이미지" />
-                </AnswerProfileImg>
-              </AnswerLeft>
-              <AnswerRight>
-                <AnswerUsername>
-                  <span>아초는고양이</span>
-                  <div>
-                    <UpdatedTime>2주전</UpdatedTime>
-                  </div>
-                </AnswerUsername>
-                <AnswerRejected>
-                  <span>답변 거절</span>
-                </AnswerRejected>
-              </AnswerRight>
-            </AnswerFeed>
-            <Reaction />
-          </FeedCard>
-        </PostingArea>
-        {/* <EmptyFeed>
-          <span className="emptyFeedText"><img src={messageIcon} alt="메시지 아이콘" />아직 질문이 없습니다</span>
-          <EmptyFeedImage>
-            <img src={emptyImg} alt="빈 상자 이미지" />
-          </EmptyFeedImage>
-        </EmptyFeed> */}
+        {userData.questionCount === 0 ? (
+          <EmptyFeed>
+            <span className="emptyFeedText">
+              <img src={messageIcon} alt="메시지 아이콘" />
+              아직 질문이 없습니다
+            </span>
+            <EmptyFeedImage>
+              <img src={emptyImg} alt="빈 상자 이미지" />
+            </EmptyFeedImage>
+          </EmptyFeed>
+        ) : (
+          <PostingArea>
+            <span className="questionCountText">
+              <img src={messageIcon} alt="메시지 아이콘" />
+              {userData.questionCount}개의 질문이 있습니다
+            </span>
+            {questionData.map(question => (
+              <FeedCard key={question.id}>
+                <FeedBadge>
+                  <Badge />
+                </FeedBadge>
+                <QuestionFeedCard question={question} createdAt={question.createdAt} />
+                {question.answer && (
+                  question.answer.isRejected ? (
+                    <AnswerFeed>
+                      <AnswerLeft>
+                        <AnswerProfileImg>
+                          <img src={profileImg} alt="프로필 이미지" />
+                        </AnswerProfileImg>
+                      </AnswerLeft>
+                      <AnswerRight>
+                        <AnswerUsername>
+                          <span>{userData.name}</span>
+                          <div>
+                            <UpdatedTime>{question.answer.createdAt}</UpdatedTime>
+                          </div>
+                        </AnswerUsername>
+                        <AnswerRejected>
+                          <span>답변 거절</span>
+                        </AnswerRejected>
+                      </AnswerRight>
+                    </AnswerFeed>
+                  ) : (
+                    <AnswerFeed>
+                      <AnswerLeft>
+                        <AnswerProfileImg>
+                          <img src={profileImg} alt="프로필 이미지" />
+                        </AnswerProfileImg>
+                      </AnswerLeft>
+                      <AnswerRight>
+                        <AnswerUsername>
+                          <span>{userData.name}</span>
+                          <div>
+                            <UpdatedTime>{question.answer.createdAt}</UpdatedTime>
+                          </div>
+                        </AnswerUsername>
+                        <AnswerContents>
+                          <div>{question.answer.content}</div>
+                        </AnswerContents>
+                      </AnswerRight>
+                    </AnswerFeed>
+                  )
+                )}
+                <Reaction />
+              </FeedCard>
+            ))}
+          </PostingArea>
+        )}
+
         <FloatingBtn onClick={() => setIsModalOpen(true)}>
           {isMobile ? "질문 작성" : "질문 작성하기"}
         </FloatingBtn>

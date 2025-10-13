@@ -13,7 +13,6 @@ const PersonIcon = styled.img`
   left: 12px;
   width: 20px;
   height: 20px;
-  }
 `;
 const Input = styled.input`
   background-color: #ffffff;
@@ -33,11 +32,10 @@ const Input = styled.input`
   }
   &:not(:placeholder-shown):not(:focus) {
     color: #000000;
-    }
   }
 `;
 
-function InputField() {
+function InputField({ value, onChange }) {
   return (
     <>
       <InputContainer>
@@ -45,6 +43,8 @@ function InputField() {
         <Input
           placeholder={inputName + '을 입력하세요'}
           alt={inputName + ' 입력란'}
+          value={value}
+          onChange={onChange}
         />
       </InputContainer>
     </>
