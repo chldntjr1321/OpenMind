@@ -15,6 +15,7 @@ import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Modal from '../components/Modal/Modal';
 import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const PostingHeader = styled.div`
   display: flex;
@@ -301,52 +302,75 @@ const FloatingBtn = styled(FloatingButton)`
 `;
 
 function PostingPage() {
+  const [user, setUser] = useState(null);
+  const [question, setQuestion] = useState([]);
+  const [questionInput, setQuestionInput] = useState('');
+  const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const userData = {
-    id: 2,
-    name: "나도여행갈래",
-    imageSource: profileImg,
-    questionCount: 3,
-    createdAt: "2주전"
-  }
-  const questionData = [
-    {
-      id: 1,
-      subjectId: 23,
-      content: "가장 좋아하는 동물이 궁금해요!",
-      like: 0,
-      dislike: 0,
-      createdAt: "1주전",
-      answer: {
-        id: 22,
-        content: "강아지를 좋아합니다",
-        isRejected: false,
-        createdAt: "2일전"
-      }
-    },
-    {
-      id: 2,
-      content: "지금 잠이 와요?",
-      like: 5,
-      dislike: 1,
-      createdAt: "6일전",
-      answer: null
-    },
-    {
-      id: 3,
-      content: "현재 통장 잔고는?",
-      like: 3,
-      dislike: 0,
-      createdAt: "3일전",
-      answer: {
-        content: "",
-        isRejected: true,
-        createdAt: "2일전"
+  const { id } = useParams();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const userResponse = await fetch(
+          `https://openmind-api.vercel.app/19-1/subjects/${id}/`
+        );
+
+        if (!userResponse.ok) {
+          if (userResponse.status === 404) {
+            console.error('해당 사용자를 찾을 수 없습니다');
+          }
+          throw new Error(`HTTP ${userResponse.status}`);
+        }
+
+        const user = await userResponse.json();
+        setUser(user);
+
+        await fetchQuestionList();
+        setLoading(false);
+
+      } catch (error) {
+        console.error('데이터를 불러올 수 없습니다:', error);
+        setLoading(false);
       }
     }
-  ]
+
+    fetchData();
+  }, [id]);
+
+  async function fetchQuestionList() {
+    try {
+      const questionResponse = await fetch(
+        `https://openmind-api.vercel.app/19-1/subjects/${id}/questions/`
+      );
+      const question = await questionResponse.json();
+      setQuestion(question.results || question);
+    } catch (error) {
+      console.error('질문을 불러올 수 없습니다:', error);
+    }
+  }
+
+  async function handleSubmit() {
+    try {
+      await fetch(
+        `https://openmind-api.vercel.app/19-1/subjects/${id}/questions/`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ content: questionInput }),
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+
+      await fetchQuestionList();
+
+      setQuestionInput('');
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('질문 작성에 실패하였습니다:', error);
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -363,6 +387,14 @@ function PostingPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  if (loading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (!user) {
+    return <div>데이터를 불러올 수 없습니다</div>;
+  }
+
   return (
     <>
       <PostingHeader>
@@ -372,10 +404,10 @@ function PostingPage() {
             <img src={logoImg} alt="로고 이미지" />
           </PostingLogo>
           <ProfileImg>
-            <img src={profileImg} alt="프로필 이미지" />
+            <img src={user.imageSource} alt="프로필 이미지" />
           </ProfileImg>
           <ProfileUsername>
-            {userData.name}
+            {user.name}
           </ProfileUsername>
           <ShareIconArea>
             <img src={linkIcon} alt="링크 URL 공유 아이콘" />
@@ -385,7 +417,7 @@ function PostingPage() {
         </ProfileArea>
       </PostingHeader>
       <PostingBody>
-        {userData.questionCount === 0 ? (
+        {user.questionCount === 0 ? (
           <EmptyFeed>
             <span className="emptyFeedText">
               <img src={messageIcon} alt="메시지 아이콘" />
@@ -399,27 +431,27 @@ function PostingPage() {
           <PostingArea>
             <span className="questionCountText">
               <img src={messageIcon} alt="메시지 아이콘" />
-              {userData.questionCount}개의 질문이 있습니다
+              {user.questionCount}개의 질문이 있습니다
             </span>
-            {questionData.map(question => (
-              <FeedCard key={question.id}>
+            {question.map(q => (
+              <FeedCard key={q.id}>
                 <FeedBadge>
                   <Badge />
                 </FeedBadge>
-                <QuestionFeedCard question={question} createdAt={question.createdAt} />
-                {question.answer && (
-                  question.answer.isRejected ? (
+                <QuestionFeedCard question={q} createdAt={q.createdAt} />
+                {q.answer && (
+                  q.answer.isRejected ? (
                     <AnswerFeed>
                       <AnswerLeft>
                         <AnswerProfileImg>
-                          <img src={profileImg} alt="프로필 이미지" />
+                          <img src={user.imageSource} alt="프로필 이미지" />
                         </AnswerProfileImg>
                       </AnswerLeft>
                       <AnswerRight>
                         <AnswerUsername>
-                          <span>{userData.name}</span>
+                          <span>{user.name}</span>
                           <div>
-                            <UpdatedTime>{question.answer.createdAt}</UpdatedTime>
+                            <UpdatedTime>{q.answer.createdAt}</UpdatedTime>
                           </div>
                         </AnswerUsername>
                         <AnswerRejected>
@@ -431,18 +463,18 @@ function PostingPage() {
                     <AnswerFeed>
                       <AnswerLeft>
                         <AnswerProfileImg>
-                          <img src={profileImg} alt="프로필 이미지" />
+                          <img src={user.imageSource} alt="프로필 이미지" />
                         </AnswerProfileImg>
                       </AnswerLeft>
                       <AnswerRight>
                         <AnswerUsername>
-                          <span>{userData.name}</span>
+                          <span>{user.name}</span>
                           <div>
-                            <UpdatedTime>{question.answer.createdAt}</UpdatedTime>
+                            <UpdatedTime>{q.answer.createdAt}</UpdatedTime>
                           </div>
                         </AnswerUsername>
                         <AnswerContents>
-                          <div>{question.answer.content}</div>
+                          <div>{q.answer.content}</div>
                         </AnswerContents>
                       </AnswerRight>
                     </AnswerFeed>
@@ -459,7 +491,12 @@ function PostingPage() {
         </FloatingBtn>
         {isModalOpen && (
           <ModalPortal>
-            <Modal onClose={() => setIsModalOpen(false)} />
+            <Modal
+              onClose={() => setIsModalOpen(false)}
+              questionInput={questionInput}
+              setQuestionInput={setQuestionInput}
+              onSubmit={handleSubmit}
+            />
           </ModalPortal>
         )}
         <Toast />
