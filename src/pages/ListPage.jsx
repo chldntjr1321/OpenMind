@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import logoImage from '../assets/image/logo.svg';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
@@ -7,6 +7,16 @@ import Dropdown from '../components/Dropdown/Dropdown';
 import UserCard from '../components/UserCard/UserCard';
 import Pagenation from '../components/Pagenation/Pagenation';
 import { useLoading } from '../components/Loading/Loading';
+
+const ITEMS_PER_PAGE = 8;
+const API_BASE_URL = 'https://openmind-api.vercel.app/19-1';
+const SORT_OPTIONS = {
+  RECENT: 'recent',
+  NAME: 'name'
+};
+const STORAGE_KEYS = {
+  USER_ID: 'userId'
+};
 
 const HeaderWrap = styled.div`
   padding: 0 130px 40px 130px;
@@ -75,65 +85,94 @@ const PaginationWrapper = styled.div`
   gap: 8px;
 `;
 
+const sortSubjects = (subjects, sortOption) => {
+  if (sortOption === SORT_OPTIONS.NAME) {
+    return [...subjects].sort((a, b) => a.name.localeCompare(b.name));
+  }
+  return [...subjects].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
+
+const validateSortOption = (option) => {
+  return Object.values(SORT_OPTIONS).includes(option) ? option : SORT_OPTIONS.RECENT;
+};
+
+const validatePage = (page) => {
+  const pageNum = parseInt(page, 10);
+  return isNaN(pageNum) || pageNum < 1 ? 1 : pageNum;
+};
+
 function ListPage() {
-  const [selectedOption, setSelectedOption] = useState('recent');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [subjects, setSubjects] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
-  const { isLoading, setIsLoading } = useLoading();
-  const ITEMS_PER_PAGE = 8;
+  const { isLoading, setIsLoading } = useLoading(); 
+
+  const selectedOption = validateSortOption(searchParams.get('sort'));
+  const currentPage = validatePage(searchParams.get('page'));
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  useEffect(() => {
-    fetchSubjects();
-  }, [selectedOption, currentPage]);
-
-  const fetchSubjects = async () => {
-    if (isLoading) return; // 로딩 중이면 함수 종료
+  const fetchSubjects = useCallback(async () => {
     try {
-      setIsLoading(true); // 로딩 시작
+      setIsLoading(true);
+      
+      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
       const response = await fetch(
-        `https://openmind-api.vercel.app/19-1/subjects/?limit=${ITEMS_PER_PAGE}&offset=${
-          (currentPage - 1) * ITEMS_PER_PAGE
-        }`
+        `${API_BASE_URL}/subjects/?limit=${ITEMS_PER_PAGE}&offset=${offset}`
       );
-      const data = await response.json();
 
-      setTotalCount(data.count);
-      let sortedResults = data.results || [];
-
-      if (selectedOption === 'name') {
-        sortedResults = sortedResults.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-      } else {
-        sortedResults = sortedResults.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+      if (!response.ok) {
+        throw new Error('데이터를 불러오는데 실패했습니다.');
       }
 
+      const data = await response.json();
+      
+      const calculatedTotalPages = Math.ceil(data.count / ITEMS_PER_PAGE);
+
+      if (currentPage > calculatedTotalPages && data.count > 0) {
+          setSearchParams(prev => ({ 
+              sort: prev.get('sort') || SORT_OPTIONS.RECENT, 
+              page: String(calculatedTotalPages) 
+          }), { replace: true }); 
+          return; 
+      }
+
+      setTotalCount(data.count);
+      
+      const sortedResults = sortSubjects(data.results || [], selectedOption);
       setSubjects(sortedResults);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching subjects:', error);
+      setSubjects([]);
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
-  };
+  }, [currentPage, selectedOption, setSearchParams]);
 
-  const handleCardClick = (id) => {
+  useEffect(() => {
+    fetchSubjects();
+  }, [fetchSubjects]);
+
+  const handleCardClick = useCallback((id) => {
     navigate(`/post/${id}`);
-  };
+  }, [navigate]);
 
-  const handleAnswerClick = () => {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      navigate(`/post/${userId}/answer`);
-    } else {
-      navigate('/');
-    }
-  };
+  const handleAnswerClick = useCallback(() => {
+    const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+    navigate(userId ? `/post/${userId}/answer` : '/');
+  }, [navigate]);
+
+  const handleSortChange = useCallback((option) => {
+    setSearchParams({ sort: option, page: '1' });
+  }, [setSearchParams]);
+
+  const handlePageChange = useCallback((page) => {
+    setSearchParams(prev => ({
+        sort: prev.get('sort') || SORT_OPTIONS.RECENT, 
+        page: String(page)
+    }));
+  }, [setSearchParams]);
 
   return (
     <ListContainer>
@@ -153,9 +192,10 @@ function ListPage() {
           <ListTitle>누구에게 질문할까요?</ListTitle>
           <Dropdown
             selectedOption={selectedOption}
-            setSelectedOption={setSelectedOption}
+            setSelectedOption={handleSortChange}
           />
         </ListBox>
+        
         <div>
           <CardGrid>
             {subjects.map((subject) => (
@@ -174,9 +214,7 @@ function ListPage() {
             <Pagenation
               totalPage={totalPages}
               currentPage={currentPage}
-              onPageChange={(page) => {
-                setCurrentPage(page);
-              }}
+              onPageChange={handlePageChange}
             />
           </PaginationWrapper>
         </div>
