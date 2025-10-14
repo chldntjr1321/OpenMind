@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import headerImg from '../assets/banner.svg';
 import logoImg from '../assets/logo.svg';
-import profileImg from '../assets/profile.svg';
 import linkIcon from '../assets/link.svg';
 import facebookIcon from '../assets/facebook.svg';
 import kakaoIcon from '../assets/kakao.svg';
@@ -305,7 +304,6 @@ const FloatingBtn = styled(FloatingButton)`
 function PostingPage() {
   const [user, setUser] = useState(null);
   const [question, setQuestion] = useState([]);
-  const [questionInput, setQuestionInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -356,20 +354,19 @@ function PostingPage() {
     }
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(content) {
     try {
       await fetch(
         `https://openmind-api.vercel.app/19-1/subjects/${id}/questions/`,
         {
           method: 'POST',
-          body: JSON.stringify({ content: questionInput }),
+          body: JSON.stringify({ content: content }),
           headers: { 'Content-Type': 'application/json' }
         }
       );
 
       await fetchQuestionList();
 
-      setQuestionInput('');
       setIsModalOpen(false);
     } catch (error) {
       console.error('질문 작성에 실패하였습니다:', error);
@@ -512,9 +509,9 @@ function PostingPage() {
           <ModalPortal>
             <Modal
               onClose={() => setIsModalOpen(false)}
-              questionInput={questionInput}
-              setQuestionInput={setQuestionInput}
               onSubmit={handleSubmit}
+              userName={user.name}
+              userImage={user.imageSource}
             />
           </ModalPortal>
         )}
