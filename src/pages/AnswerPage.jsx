@@ -170,6 +170,11 @@ const Contents = styled.div`
     font-weight: 400;
     line-height: 24px;
   }
+  & .rejected__answer {
+    color: #b93333;
+    font-size: 16px;
+    line-height: 22px;
+  }
 `;
 const DeleteAllBtn = styled(FloatingButton)`
   position: absolute;
@@ -269,6 +274,10 @@ export default function AnswerPage() {
     const currentInput = inputValues[question.id] || '';
     const isDisabled = currentInput.trim().length === 0;
 
+    // ✅ 1️⃣ 답변이 존재하고 isRejected가 true면
+    if (question.answer?.isRejected) {
+      return <p className="rejected__answer">답변 거절</p>;
+    }
     if (editingCards[question.id]) {
       return (
         <>
@@ -522,6 +531,60 @@ export default function AnswerPage() {
     }
   };
 
+  // 거절하기 기능 함수
+  const handleReject = async (id) => {
+    const question = questions.find((q) => q.id === id);
+    if (!question) return;
+
+    // 만약 답변이 없을 때 거절 클릭 시
+    if (!question.answer) {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${question.id}/answers/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: '답변을 거절했습니다.',
+            isRejected: true, // 거절 상태로 생성
+          }),
+        }
+      );
+      const newAnswer = await response.json();
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === id ? { ...q, answer: newAnswer } : q))
+      );
+      return;
+    }
+    const answerId = question.answer.id;
+    try {
+      const response = await fetch(
+        `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: question.answer.content,
+            isRejected: true,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('답변 거절 실패');
+
+      const updatedAnswer = await response.json();
+
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === id ? { ...q, answer: updatedAnswer } : q))
+      );
+      setEditingCards((prev) => ({ ...prev, [id]: false }));
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    }
+  };
+
   return (
     <>
       <Banner>
@@ -578,6 +641,9 @@ export default function AnswerPage() {
                         [question.id]: value,
                       }))
                     }
+                    isAnswered={!!question.answer} // 불리언 값으로 변환
+                    onReject={() => handleReject(question.id)}
+                    setOpenCardId={setOpenCardId}
                   />
                 )}
               </CardHeader>
