@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import RightArrow from '../../assets/arrow-right(white).svg';
 
-const FillButtonBox = styled.div`
+const FillButtonBox = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  width: 100%;
   background-color: #542f1a;
   color: #ffffff;
   font-size: 16px;
@@ -34,10 +35,10 @@ const FillButtonBox = styled.div`
   }
 `;
 
-export default function FilledBtn({ btnText, isDisabled, onClick }) {
+export default function FilledBtn({ btnText, isDisabled, onClick, type = 'button' }) {
   return (
     <>
-      <FillButtonBox className={isDisabled ? 'disabled' : ''} onClick={onClick}>
+      <FillButtonBox type={type} className={isDisabled ? 'disabled' : ''} onClick={onClick}>
         {btnText}
         {/* <img src={RightArrow} alt="오른쪽 화살표" /> */}
       </FillButtonBox>
