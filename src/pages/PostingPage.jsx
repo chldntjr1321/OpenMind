@@ -318,9 +318,16 @@ function PostingPage() {
 
   // 카카오 SDK 초기화
   useEffect(() => {
+    const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
+    console.log('🟡 Kakao key in runtime:', kakaoKey);
+
     if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY);
-      console.log('Kakao SDK 초기화 완료');
+      if (!kakaoKey) {
+        console.warn('⚠️ Kakao JavaScript 키가 없습니다.');
+        return;
+      }
+      window.Kakao.init(kakaoKey);
+      console.log('✅ Kakao SDK 초기화 완료');
     }
   }, []);
 
@@ -447,8 +454,9 @@ function PostingPage() {
   }
 
   function handleShareFacebook() {
-    const shareUrl =
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentCopyUrl)}`;
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+      currentCopyUrl
+    )}`;
     window.open(shareUrl, '_blank', 'width=600,height=400');
   }
 
@@ -469,9 +477,21 @@ function PostingPage() {
           </ProfileImg>
           <ProfileUsername>{user.name}</ProfileUsername>
           <ShareIconArea>
-            <img src={linkIcon} onClick={handleCopyUrl} alt="링크 URL 공유 아이콘" />
-            <img src={facebookIcon} onClick={handleShareFacebook} alt="페이스북 공유 아이콘" />
-            <img src={kakaoIcon} onClick={handleShareKakao} alt="카카오톡 공유 아이콘" />
+            <img
+              src={linkIcon}
+              onClick={handleCopyUrl}
+              alt="링크 URL 공유 아이콘"
+            />
+            <img
+              src={facebookIcon}
+              onClick={handleShareFacebook}
+              alt="페이스북 공유 아이콘"
+            />
+            <img
+              src={kakaoIcon}
+              onClick={handleShareKakao}
+              alt="카카오톡 공유 아이콘"
+            />
           </ShareIconArea>
         </ProfileArea>
       </PostingHeader>
