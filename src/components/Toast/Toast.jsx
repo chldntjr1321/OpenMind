@@ -15,10 +15,11 @@ const ToastMessage = styled.div`
   box-shadow: 0px 4px 4px 0 rgba(0, 0, 0, 0.25);
 `;
 
-export default function Toast() {
+export default function Toast({ message, visible }) {
+  if (!visible) return null;
   return (
     <>
-      <ToastMessage>URL이 복사되었습니다</ToastMessage>
+      <ToastMessage>{message}</ToastMessage>
     </>
   );
 }

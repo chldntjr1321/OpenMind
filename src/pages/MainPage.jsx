@@ -60,18 +60,6 @@ const ButtonContainer = styled.div`
   cursor: pointer;
 `;
 
-const MainIllustration = styled.div`
-  width: 100%;
-  height: 627px;
-  position: absolute;
-  top: 205px;
-  z-index: 0;
-  /* background-image: url(${illustrationImage});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat; */
-`;
-
 function MainPage() {
   const [name, setName] = useState('');
   const navigate = useNavigate();
@@ -96,12 +84,16 @@ function MainPage() {
           body: JSON.stringify({ name: name.trim() }),
         }
       );
+      if (!response.ok) {
+        throw new Error('계정 생성에 실패했습니다.');
+      }
 
       const data = await response.json();
       localStorage.setItem('userId', data.id);
       navigate(`/post/${data.id}/answer`);
     } catch (error) {
       console.error(error);
+      alert('계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false); // 로딩 종료
     }
@@ -130,8 +122,6 @@ function MainPage() {
           </ButtonContainer>
         </MainForm>
       </MainContainer>
-
-      <MainIllustration />
     </PageContainer>
   );
 }
