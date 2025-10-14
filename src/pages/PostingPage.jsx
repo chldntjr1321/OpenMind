@@ -15,6 +15,7 @@ import Modal from '../components/Modal/Modal';
 import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useLoading } from '../components/Loading/Loading';
 
 const PostingHeader = styled.div`
   display: flex;
@@ -37,7 +38,7 @@ const PostingHeaderImage = styled.img`
   @media (max-width: 375px) {
     height: 177px;
   }
-  `;
+`;
 const ProfileArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -107,7 +108,8 @@ const PostingBody = styled.div`
   align-items: center;
   padding: 54px 24px 166px;
 `;
-const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
+const EmptyFeed = styled.div`
+  // 피드(질문)가 없는 경우
   background-color: #f5f1ee;
   display: flex;
   flex-direction: column;
@@ -124,8 +126,8 @@ const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
     width: 24px;
     height: 24px;
     @media (max-width: 375px) {
-    width: 22px;
-    height: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
   .emptyFeedText {
@@ -140,12 +142,12 @@ const EmptyFeed = styled.div`     // 피드(질문)가 없는 경우
     @media (max-width: 375px) {
       font-size: 18px;
       line-height: 24px;
+    }
   }
-}
-@media (max-width: 375px) {
-  padding: 16px 24px;
-  gap: 8px;
-}
+  @media (max-width: 375px) {
+    padding: 16px 24px;
+    gap: 8px;
+  }
 `;
 const EmptyFeedImage = styled.div`
   position: absolute;
@@ -164,7 +166,8 @@ const EmptyFeedImage = styled.div`
     height: 100%;
   }
 `;
-const PostingArea = styled.div`   // 피드(질문)가 1개 이상인 경우
+const PostingArea = styled.div`
+  // 피드(질문)가 1개 이상인 경우
   background-color: #f5f1ee;
   display: flex;
   flex-direction: column;
@@ -181,8 +184,8 @@ const PostingArea = styled.div`   // 피드(질문)가 1개 이상인 경우
     width: 24px;
     height: 24px;
     @media (max-width: 375px) {
-    width: 22px;
-    height: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
   .questionCountText {
@@ -296,7 +299,7 @@ const AnswerRejected = styled.div`
     line-height: 22px;
     letter-spacing: 0px;
   }
-`
+`;
 const FloatingBtn = styled(FloatingButton)`
   font-family: Actor;
 `;
@@ -304,11 +307,11 @@ const FloatingBtn = styled(FloatingButton)`
 function PostingPage() {
   const [user, setUser] = useState(null);
   const [question, setQuestion] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
+  const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
 
   const { id } = useParams();
   const currentCopyUrl = window.location.href;
@@ -316,6 +319,7 @@ function PostingPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true); // 로딩 시작
         const userResponse = await fetch(
           `https://openmind-api.vercel.app/19-1/subjects/${id}/`
         );
@@ -331,11 +335,10 @@ function PostingPage() {
         setUser(user);
 
         await fetchQuestionList();
-        setLoading(false);
-
       } catch (error) {
         console.error('데이터를 불러올 수 없습니다:', error);
-        setLoading(false);
+      } finally {
+        setIsLoading(false); // 로딩 종료
       }
     }
 
@@ -343,6 +346,7 @@ function PostingPage() {
   }, [id]);
 
   async function fetchQuestionList() {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     try {
       const questionResponse = await fetch(
         `https://openmind-api.vercel.app/19-1/subjects/${id}/questions/`
@@ -356,12 +360,13 @@ function PostingPage() {
 
   async function handleSubmit(content) {
     try {
+      setIsLoading(true); // 로딩 시작
       await fetch(
         `https://openmind-api.vercel.app/19-1/subjects/${id}/questions/`,
         {
           method: 'POST',
           body: JSON.stringify({ content: content }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         }
       );
 
@@ -370,6 +375,8 @@ function PostingPage() {
       setIsModalOpen(false);
     } catch (error) {
       console.error('질문 작성에 실패하였습니다:', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   }
 
@@ -400,10 +407,6 @@ function PostingPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (loading) {
-    return <div>로딩 중...</div>;
-  }
-
   if (!user) {
     return <div>데이터를 불러올 수 없습니다</div>;
   }
@@ -419,14 +422,13 @@ function PostingPage() {
           <ProfileImg>
             <img src={user.imageSource} alt="프로필 이미지" />
           </ProfileImg>
-          <ProfileUsername>
-            {user.name}
-          </ProfileUsername>
+          <ProfileUsername>{user.name}</ProfileUsername>
           <ShareIconArea>
             <img
               src={linkIcon}
               alt="링크 URL 공유 아이콘"
-              onClick={handleCopyUrl} />
+              onClick={handleCopyUrl}
+            />
             <img src={facebookIcon} alt="페이스북 공유 아이콘" />
             <img src={kakaoIcon} alt="카카오톡 공유 아이콘" />
           </ShareIconArea>
@@ -449,14 +451,14 @@ function PostingPage() {
               <img src={messageIcon} alt="메시지 아이콘" />
               {user.questionCount}개의 질문이 있습니다
             </span>
-            {question.map(q => (
+            {question.map((q) => (
               <FeedCard key={q.id}>
                 <FeedBadge>
                   <Badge />
                 </FeedBadge>
                 <QuestionFeedCard question={q} createdAt={q.createdAt} />
-                {q.answer && (
-                  q.answer.isRejected ? (
+                {q.answer &&
+                  (q.answer.isRejected ? (
                     <AnswerFeed>
                       <AnswerLeft>
                         <AnswerProfileImg>
@@ -494,8 +496,7 @@ function PostingPage() {
                         </AnswerContents>
                       </AnswerRight>
                     </AnswerFeed>
-                  )
-                )}
+                  ))}
                 <Reaction />
               </FeedCard>
             ))}
@@ -503,7 +504,7 @@ function PostingPage() {
         )}
 
         <FloatingBtn onClick={() => setIsModalOpen(true)}>
-          {isMobile ? "질문 작성" : "질문 작성하기"}
+          {isMobile ? '질문 작성' : '질문 작성하기'}
         </FloatingBtn>
         {isModalOpen && (
           <ModalPortal>
