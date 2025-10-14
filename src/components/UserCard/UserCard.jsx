@@ -6,13 +6,14 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 200px;
+  width: 100%; 
   height: 187px;
   padding: 20px;
   border: 1px solid #818181;
   border-radius: 16px;
   cursor: pointer;
 `;
+
 const ProfileBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -28,6 +29,7 @@ const ProfileBox = styled.div`
     line-height: 25px;
   }
 `;
+
 const QuestionBox = styled.div`
   display: flex;
   justify-content: space-between;

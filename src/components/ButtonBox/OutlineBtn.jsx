@@ -34,6 +34,16 @@ const OutlineButtonBox = styled.div`
     border: 1px solid #c7bbb5;
     cursor: not-allowed;
   }
+
+  @media (max-width: 767px) {
+    padding: 8px 12px;
+    gap: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    
+    & img {
+      width: 16px;
+  }
 `;
 
 export default function OutlineBtn({ btnText, isDisabled }) {
