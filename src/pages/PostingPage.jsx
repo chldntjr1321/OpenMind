@@ -14,7 +14,7 @@ import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Modal from '../components/Modal/Modal';
 import ModalPortal from '../components/Portal';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useLoading } from '../components/Loading/Loading';
 
 const PostingHeader = styled.div`
@@ -59,9 +59,12 @@ const PostingLogo = styled.div`
     width: 124px;
     height: 49px;
   }
-  & > img {
+  & img {
     width: 100%;
     height: 100%;
+  }
+  & > a {
+    cursor: pointer;
   }
 `;
 const ProfileImg = styled.div`
@@ -572,7 +575,9 @@ function PostingPage() {
         <PostingHeaderImage src={headerImg} />
         <ProfileArea>
           <PostingLogo>
-            <img src={logoImg} alt="로고 이미지" />
+            <Link to="/">
+              <img src={logoImg} alt="로고 이미지" />
+            </Link>
           </PostingLogo>
           <ProfileImg>
             <img src={user.imageSource} alt="프로필 이미지" />
@@ -605,7 +610,7 @@ function PostingPage() {
             {question.map((q) => (
               <FeedCard key={q.id}>
                 <FeedBadge>
-                  <Badge />
+                  <Badge answer={q.answer} />
                 </FeedBadge>
                 <QuestionFeedCard question={q} createdAt={q.createdAt} />
                 {q.answer &&
