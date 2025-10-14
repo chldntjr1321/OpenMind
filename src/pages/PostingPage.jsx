@@ -98,6 +98,7 @@ const ShareIconArea = styled.div`
   & > img {
     width: 100%;
     height: 100%;
+    cursor: pointer;
   }
 `;
 const PostingBody = styled.div`
@@ -308,8 +309,11 @@ function PostingPage() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 375);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
 
   const { id } = useParams();
+  const currentCopyUrl = window.location.href;
 
   useEffect(() => {
     async function fetchData() {
@@ -372,6 +376,18 @@ function PostingPage() {
     }
   }
 
+  async function handleCopyUrl() {
+    try {
+      await navigator.clipboard.writeText(currentCopyUrl);
+      setMessage('URL이 복사되었습니다');
+    } catch {
+      setMessage('복사에 실패하였습니다');
+    } finally {
+      setVisible(true);
+      setTimeout(() => setVisible(false), 5000);
+    }
+  }
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 375) {
@@ -383,8 +399,8 @@ function PostingPage() {
 
     handleResize();
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   if (loading) {
@@ -410,7 +426,10 @@ function PostingPage() {
             {user.name}
           </ProfileUsername>
           <ShareIconArea>
-            <img src={linkIcon} alt="링크 URL 공유 아이콘" />
+            <img
+              src={linkIcon}
+              alt="링크 URL 공유 아이콘"
+              onClick={handleCopyUrl} />
             <img src={facebookIcon} alt="페이스북 공유 아이콘" />
             <img src={kakaoIcon} alt="카카오톡 공유 아이콘" />
           </ShareIconArea>
@@ -499,7 +518,7 @@ function PostingPage() {
             />
           </ModalPortal>
         )}
-        <Toast />
+        <Toast message={message} visible={visible} />
       </PostingBody>
     </>
   );
