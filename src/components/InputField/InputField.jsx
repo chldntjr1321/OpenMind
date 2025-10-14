@@ -35,16 +35,15 @@ const Input = styled.input`
   }
 `;
 
-function InputField({ value, onChange }) {
+function InputField(props) {
   return (
     <>
       <InputContainer>
         <PersonIcon src={personIcon} alt='사람 아이콘' />
-        <Input
+        <Input 
           placeholder={inputName + '을 입력하세요'}
           alt={inputName + ' 입력란'}
-          value={value}
-          onChange={onChange}
+          {...props}
         />
       </InputContainer>
     </>
