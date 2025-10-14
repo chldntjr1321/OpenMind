@@ -313,6 +313,14 @@ function PostingPage() {
   const { id } = useParams();
   const currentCopyUrl = window.location.href;
 
+  // 카카오 SDK 초기화
+  useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY);
+      console.log('Kakao SDK 초기화 완료');
+    }
+  }, []);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -341,6 +349,21 @@ function PostingPage() {
 
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 375) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   async function fetchQuestionList() {
     try {
@@ -373,6 +396,7 @@ function PostingPage() {
     }
   }
 
+  // URL 공유하기
   async function handleCopyUrl() {
     try {
       await navigator.clipboard.writeText(currentCopyUrl);
@@ -385,20 +409,35 @@ function PostingPage() {
     }
   }
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 375) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
+  // 카카오톡 공유하기
+  function shareKakao() {
+    if (!window.Kakao) {
+      alert('카카오톡 공유 기능을 불러오는 중입니다.');
+      return;
+    }
 
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: `${user.name}님에게 질문하기`,
+        description: '궁금한 것을 질문해보세요!',
+        imageUrl: user.imageSource,
+        link: {
+          mobileWebUrl: window.location.href,
+          webUrl: window.location.href,
+        },
+      },
+      buttons: [
+        {
+          title: '질문하러 가기',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href,
+          },
+        },
+      ],
+    });
+  }
 
   if (loading) {
     return <div>로딩 중...</div>;
@@ -423,12 +462,9 @@ function PostingPage() {
             {user.name}
           </ProfileUsername>
           <ShareIconArea>
-            <img
-              src={linkIcon}
-              alt="링크 URL 공유 아이콘"
-              onClick={handleCopyUrl} />
+            <img src={linkIcon} onClick={handleCopyUrl} alt="링크 URL 공유 아이콘" />
             <img src={facebookIcon} alt="페이스북 공유 아이콘" />
-            <img src={kakaoIcon} alt="카카오톡 공유 아이콘" />
+            <img src={kakaoIcon} onClick={shareKakao} alt="카카오톡 공유 아이콘" />
           </ShareIconArea>
         </ProfileArea>
       </PostingHeader>
