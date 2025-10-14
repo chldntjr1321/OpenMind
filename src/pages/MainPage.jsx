@@ -84,6 +84,10 @@ function MainPage() {
           body: JSON.stringify({ name: name.trim() }),
         }
       );
+      if (!response.ok) {
+        throw new Error('계정 생성에 실패했습니다.');
+      }
+
       const data = await response.json();
       localStorage.setItem('userId', data.id);
       navigate(`/post/${data.id}/answer`);
