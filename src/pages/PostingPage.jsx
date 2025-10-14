@@ -500,7 +500,7 @@ function PostingPage() {
             {question.map((q) => (
               <FeedCard key={q.id}>
                 <FeedBadge>
-                  <Badge />
+                  <Badge answer={q.answer} />
                 </FeedBadge>
                 <QuestionFeedCard question={q} createdAt={q.createdAt} />
                 {q.answer &&
