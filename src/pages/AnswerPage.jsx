@@ -242,6 +242,14 @@ export default function AnswerPage() {
   const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
   const currentCopyUrl = window.location.href;
 
+  // 카카오 SDK 초기화
+  useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY);
+      console.log('Kakao SDK 초기화 완료');
+    }
+  }, []);
+
   useEffect(() => {
     async function fetchUserData() {
       if (!id) return;
@@ -652,6 +660,36 @@ export default function AnswerPage() {
     }
   }
 
+  // 카카오톡 공유하기
+  function handleShareKakao() {
+    if (!window.Kakao) {
+      alert('카카오톡 공유 기능을 불러오는 중입니다.');
+      return;
+    }
+
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: `${user.name}님에게 질문하기`,
+        description: '궁금한 것을 질문해보세요!',
+        imageUrl: user.imageSource,
+        link: {
+          mobileWebUrl: window.location.href,
+          webUrl: window.location.href,
+        },
+      },
+      buttons: [
+        {
+          title: '질문하러 가기',
+          link: {
+            mobileWebUrl: currentCopyUrl,
+            webUrl: currentCopyUrl,
+          },
+        },
+      ],
+    });
+  }
+
   return (
     <>
       <Banner>
@@ -664,7 +702,7 @@ export default function AnswerPage() {
             <p>{user ? user.name : '닉네임 불러오는 중..'}</p>
             <IconBox>
               <img src={ShareURLIcon} onClick={handleCopyUrl} alt="링크URL 공유 아이콘" />
-              <img src={ShareKakaoIcon} alt="카카오톡 공유 아이콘" />
+              <img src={ShareKakaoIcon} onClick={handleShareKakao} alt="카카오톡 공유 아이콘" />
               <img src={ShareFacebookIcon} alt="페이스북 공유 아이콘" />
             </IconBox>
           </ProfileBox>
