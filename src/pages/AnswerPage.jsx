@@ -690,6 +690,13 @@ export default function AnswerPage() {
     });
   }
 
+  // 페이스북 공유하기
+  function handleShareFacebook() {
+    const shareUrl =
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentCopyUrl)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  }
+
   return (
     <>
       <Banner>
@@ -698,12 +705,12 @@ export default function AnswerPage() {
             <img src={Logo} alt="로고 이미지" className="logo" />
           </Link>
           <ProfileBox>
-            <img src={ProfileImg} alt="프로필 이미지" />
+            <img src={user.imageSource} alt="프로필 이미지" />
             <p>{user ? user.name : '닉네임 불러오는 중..'}</p>
             <IconBox>
               <img src={ShareURLIcon} onClick={handleCopyUrl} alt="링크URL 공유 아이콘" />
               <img src={ShareKakaoIcon} onClick={handleShareKakao} alt="카카오톡 공유 아이콘" />
-              <img src={ShareFacebookIcon} alt="페이스북 공유 아이콘" />
+              <img src={ShareFacebookIcon} onClick={handleShareFacebook} alt="페이스북 공유 아이콘" />
             </IconBox>
           </ProfileBox>
         </HeaderBox>
@@ -759,7 +766,7 @@ export default function AnswerPage() {
               </CardHeader>
               <QuestionFeedCard question={question} />
               <AnswerBox>
-                <img src={ProfileImg} alt="프로필 이미지" />
+                <img src={user.imageSource} alt="프로필 이미지" />
                 <Contents>
                   <p>{user.name}</p>
                   {answerContent(question)}
