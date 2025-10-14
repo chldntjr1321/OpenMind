@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import MessageIcon from '../../assets/messages.svg';
 import CloseIcon from '../../assets/close.svg';
-import ProfileImg from '../../assets/profile.svg';
 import InputTextArea from '../InputTextArea/InputTextArea';
 import FilledBtn from '../ButtonBox/FilledBtn';
 import { useRef, useState, useEffect } from 'react';
@@ -84,7 +83,7 @@ const Overlay = styled.div`
   z-index: 9998;
 `;
 
-export default function Modal({ onClose }) {
+export default function Modal({ onClose, onSubmit, userName, userImage }) {
   const [isDisabled, setIsDisabled] = useState(true);
   const [inputValue, setInputValue] = useState('');
 
@@ -104,6 +103,18 @@ export default function Modal({ onClose }) {
     }
   }, []);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!inputValue.trim()) {
+      alert('질문을 입력해주세요');
+      return;
+    }
+
+    await onSubmit(inputValue);
+    setInputValue('');
+  };
+
   return (
     <Overlay onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
@@ -116,8 +127,8 @@ export default function Modal({ onClose }) {
         </ModalHeader>
         <RecieveUser>
           <p>To.</p>
-          <img src={ProfileImg} alt="프로필 이미지" />
-          <p>아초는 고양이</p>
+          <img src={userImage} alt="프로필 이미지" />
+          <p>{userName}</p>
         </RecieveUser>
         <ContentBox>
           <InputTextArea
@@ -127,7 +138,7 @@ export default function Modal({ onClose }) {
               setInputValue(e.target.value);
             }}
           />
-          <FilledBtn btnText="질문 보내기" isDisabled={isDisabled} />
+          <FilledBtn btnText="질문 보내기" isDisabled={isDisabled} onClick={handleSubmit} />
         </ContentBox>
       </ModalBox>
     </Overlay>
