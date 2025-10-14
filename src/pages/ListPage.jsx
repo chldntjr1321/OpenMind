@@ -25,17 +25,36 @@ const HeaderWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 1199px) {
+    padding: 0 50px 40px 50px;
+  }
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px 24px 0 24px;
+  }
 `;
 
 const Logo = styled.img`
   height: 57px;
   width: auto;
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    width: 146px;
+    height: 57px;
+  }
 `;
 
 const ButtonWrapper = styled.div`
   margin-top: -8px;
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    margin-top: 0;
+  }
 `;
 
 const ListContainer = styled.main`
@@ -52,6 +71,15 @@ const ListWrap = styled.div`
   display: flex;
   flex-direction: column;
   gap: 30px;
+
+  @media (max-width: 1199px) and (min-width: 768px) {
+    padding: 0 32px;
+  }
+
+  @media (max-width: 767px) {
+    padding: 0 24px;
+    gap: 24px;
+  }
 `;
 
 const ListBox = styled.div`
@@ -59,12 +87,26 @@ const ListBox = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 767px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding-top: 54px;
+  }
 `;
 
 const ListTitle = styled.h1`
   font-size: 40px;
   font-weight: 400;
   color: #000000;
+
+  @media (max-width: 767px) {
+    font-size: 24px;
+    text-align: left;
+  }
 `;
 
 const CardGrid = styled.div`
@@ -72,10 +114,23 @@ const CardGrid = styled.div`
   grid-template-columns: repeat(4, 220px);
   gap: 20px;
   justify-content: center;
+
+  @media (max-width: 1199px) and (min-width: 768px) {
+    grid-template-columns: repeat(4, minmax(186px, 220px));
+    max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(140px, 220px));
+    gap: 16px;
+  }
 `;
 
 const CardWrapper = styled.div`
   cursor: pointer;
+  max-width: 220px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const PaginationWrapper = styled.div`
@@ -83,6 +138,10 @@ const PaginationWrapper = styled.div`
   justify-content: center;
   margin-top: 40px;
   gap: 8px;
+
+  @media (max-width: 767px) {
+    margin-top: 24px;
+  }
 `;
 
 const sortSubjects = (subjects, sortOption) => {
@@ -106,7 +165,7 @@ function ListPage() {
   const [subjects, setSubjects] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const navigate = useNavigate();
-  const { isLoading, setIsLoading } = useLoading(); 
+  const { setIsLoading } = useLoading();
 
   const selectedOption = validateSortOption(searchParams.get('sort'));
   const currentPage = validatePage(searchParams.get('page'));
@@ -116,7 +175,7 @@ function ListPage() {
   const fetchSubjects = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const offset = (currentPage - 1) * ITEMS_PER_PAGE;
       const response = await fetch(
         `${API_BASE_URL}/subjects/?limit=${ITEMS_PER_PAGE}&offset=${offset}`
@@ -127,19 +186,8 @@ function ListPage() {
       }
 
       const data = await response.json();
-      
-      const calculatedTotalPages = Math.ceil(data.count / ITEMS_PER_PAGE);
-
-      if (currentPage > calculatedTotalPages && data.count > 0) {
-          setSearchParams(prev => ({ 
-              sort: prev.get('sort') || SORT_OPTIONS.RECENT, 
-              page: String(calculatedTotalPages) 
-          }), { replace: true }); 
-          return; 
-      }
-
       setTotalCount(data.count);
-      
+
       const sortedResults = sortSubjects(data.results || [], selectedOption);
       setSubjects(sortedResults);
     } catch (error) {
@@ -148,7 +196,7 @@ function ListPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, selectedOption, setSearchParams]);
+  }, [currentPage, selectedOption, setIsLoading]);
 
   useEffect(() => {
     fetchSubjects();
@@ -168,11 +216,8 @@ function ListPage() {
   }, [setSearchParams]);
 
   const handlePageChange = useCallback((page) => {
-    setSearchParams(prev => ({
-        sort: prev.get('sort') || SORT_OPTIONS.RECENT, 
-        page: String(page)
-    }));
-  }, [setSearchParams]);
+    setSearchParams({ sort: selectedOption, page: String(page) });
+  }, [selectedOption, setSearchParams]);
 
   return (
     <ListContainer>
@@ -195,7 +240,7 @@ function ListPage() {
             setSelectedOption={handleSortChange}
           />
         </ListBox>
-        
+
         <div>
           <CardGrid>
             {subjects.map((subject) => (

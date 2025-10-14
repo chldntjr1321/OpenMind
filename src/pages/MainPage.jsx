@@ -12,19 +12,47 @@ const PageContainer = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
-
   height: 100vh;
   position: relative;
+
+  @media (max-width: 1199px) {  
+    background-size: contain; 
+    background-position: bottom; 
+  }
+
+  @media (max-width: 767px) {
+    background-size: contain;
+    background-position: bottom;
+  }
 `;
 
 const Header = styled.header`
   padding: 45px 130px 0;
   text-align: right;
+
+  @media (max-width: 1199px) {
+    padding: 40px 50px 0;
+  }
+
+  @media (max-width: 767px) {
+    display: none;
+`;
+
+const MobileButtonBox = styled.div`
+  display: none;
+
+  @media (max-width: 767px) {
+    display: block;
+  }
 `;
 
 const ButtonBox = styled.div`
   display: inline-block;
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    padding-top: 80px;
+    gap: 16px;
 `;
 
 const MainContainer = styled.main`
@@ -37,11 +65,25 @@ const MainContainer = styled.main`
   gap: 24px;
   position: relative;
   z-index: 2;
+
+  @media (max-width: 1199px) {
+    padding-top: 70px;  
+  }
+
+  @media (max-width: 767px) {
+    padding-top: 80px;
+    gap: 16px;
+  }
 `;
 
 const Logo = styled.img`
   width: auto;
   height: auto;
+
+  @media (max-width: 767px) {
+    max-width: 248px;
+    height: auto;
+  }
 `;
 
 const MainForm = styled.form`
@@ -52,6 +94,11 @@ const MainForm = styled.form`
   gap: 16px;
   border-radius: 16px;
   background: #ffffff;
+
+  @media (max-width: 767px) {
+    width: 327px;
+    padding: 24px;
+  }
 `;
 
 function MainPage() {
@@ -108,6 +155,10 @@ function MainPage() {
         <div>
           <Logo src={logoImage} alt="OpenMind 로고" />
         </div>
+
+        <MobileButtonBox onClick={handleGoToAsk}>
+          <OutlineBtn btnText="질문하러 가기" />
+        </MobileButtonBox>
 
         <MainForm onSubmit={handleSubmit}>
           <InputField name="name" />
