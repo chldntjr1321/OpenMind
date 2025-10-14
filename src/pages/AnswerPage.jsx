@@ -6,6 +6,7 @@ import ShareURLIcon from '../assets/link.svg';
 import ShareKakaoIcon from '../assets/kakao.svg';
 import ShareFacebookIcon from '../assets/facebook.svg';
 import MessageIcon from '../assets/message-brown.svg';
+import EmptyIcon from '../assets/empty.svg';
 import MoreIcon from '../assets/more.svg';
 import Badge from '../components/Badge/Badge';
 import QuestionFeedCard from '../components/QuestionFeedCard/QuestionFeedCard';
@@ -16,6 +17,7 @@ import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Edit from '../components/Edit/Edit';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useLoading } from '../components/Loading/Loading';
 
 const Banner = styled.div`
   width: 100%;
@@ -113,6 +115,23 @@ const CardBoxHeader = styled.div`
     line-height: 25px;
   }
 `;
+const EmptyBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 70px 0 65px 0;
+  & img {
+    width: 150px;
+  }
+  @media (max-width: 375px) {
+    padding: 66px 0 106px 0;
+
+    & img {
+      width: 114px;
+    }
+  }
+`;
 
 const Card = styled.div`
   background-color: #ffffff;
@@ -198,18 +217,6 @@ const DeleteAllBtn = styled(FloatingButton)`
     white-space: nowrap;
   }
 `;
-const ModalOpenBtn = styled.button`
-  position: fixed;
-  bottom: 50px;
-  right: 50px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background-color: #542f1a;
-  color: white;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-`;
 
 export default function AnswerPage() {
   const TEAM_ID = '19-1';
@@ -229,11 +236,13 @@ export default function AnswerPage() {
     return dislikes ? JSON.parse(dislikes) : [];
   });
   const { id } = useParams();
+  const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
 
   useEffect(() => {
     async function fetchUserData() {
       if (!id) return;
       try {
+        setIsLoading(true); // 로딩 시작
         const [userRes, questionsRes] = await Promise.all([
           fetch(`https://openmind-api.vercel.app/${TEAM_ID}/subjects/${id}/`),
           fetch(
@@ -250,6 +259,8 @@ export default function AnswerPage() {
         setQuestions(questionsData.results);
       } catch (err) {
         console.error('데이터를 불러오지 못했습니다.', err);
+      } finally {
+        setIsLoading(false); // 로딩 종료
       }
     }
     fetchUserData();
@@ -261,6 +272,7 @@ export default function AnswerPage() {
 
   // 수정 버튼 클릭 시 동작 함수
   const handleEditClick = (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) return;
 
@@ -274,7 +286,7 @@ export default function AnswerPage() {
     const currentInput = inputValues[question.id] || '';
     const isDisabled = currentInput.trim().length === 0;
 
-    // ✅ 1️⃣ 답변이 존재하고 isRejected가 true면
+    // 답변이 존재해도 isRejected가 true면 "답변 거절" 표시
     if (question.answer?.isRejected) {
       return <p className="rejected__answer">답변 거절</p>;
     }
@@ -317,6 +329,7 @@ export default function AnswerPage() {
 
   // 답변 생성 함수
   const handleCreateAnswer = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) {
       console.error('해당 질문을 찾을 수 없습니다.');
@@ -329,6 +342,7 @@ export default function AnswerPage() {
       return;
     }
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/answers/`,
         {
@@ -353,9 +367,14 @@ export default function AnswerPage() {
       setInputValues((prev) => ({ ...prev, [id]: '' }));
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
+
+  // 답변 수정 요청 함수
   const handleUpdateAnswer = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question || !question.answer) {
       console.error('해당 질문이나 답변을 찾을 수 없습니다.');
@@ -363,6 +382,7 @@ export default function AnswerPage() {
     }
     const answerId = question.answer.id;
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
         {
@@ -386,11 +406,14 @@ export default function AnswerPage() {
       setEditingCards((prev) => ({ ...prev, [id]: false }));
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   // 개별 질문 삭제 함수
   const handleDeleteQuestion = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) {
       console.error('해당 질문을 찾을 수 없습니다.');
@@ -399,6 +422,7 @@ export default function AnswerPage() {
     const questionId = question.id;
 
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/`,
         {
@@ -411,17 +435,21 @@ export default function AnswerPage() {
       setEditingCards((prev) => ({ ...prev, [id]: false }));
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   // 전체 질문 삭제 함수
   const handleDeleteQuestionsAll = async () => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     if (questions.length === 0) {
       console.error('질문이 없습니다!');
       return;
     }
 
     try {
+      setIsLoading(true); // 로딩 시작
       await Promise.all(
         questions.map((q) =>
           fetch(
@@ -435,11 +463,14 @@ export default function AnswerPage() {
       setQuestions([]); // 화면에서 질문들 모두 제거
     } catch (error) {
       console.error('전체 삭제 실패:', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   // 좋아요 기능 함수
   const handleLike = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) return;
     if (clickedDislikes.includes(id)) return; // 싫어요 누른 상태에서 좋아요 못누르게
@@ -448,6 +479,7 @@ export default function AnswerPage() {
     const questionId = question.id;
 
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
         {
@@ -482,11 +514,14 @@ export default function AnswerPage() {
       });
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   // 싫어요 기능 함수
   const handleDislike = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) return;
     if (clickedLikes.includes(id)) return; // 좋아요 누른 상태에서 싫어요 못누르게
@@ -494,6 +529,7 @@ export default function AnswerPage() {
     const questionId = question.id;
 
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/questions/${questionId}/reaction/`,
         {
@@ -528,37 +564,49 @@ export default function AnswerPage() {
       });
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   // 거절하기 기능 함수
   const handleReject = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     const question = questions.find((q) => q.id === id);
     if (!question) return;
 
     // 만약 답변이 없을 때 거절 클릭 시
     if (!question.answer) {
-      const response = await fetch(
-        `https://openmind-api.vercel.app/${TEAM_ID}/questions/${question.id}/answers/`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            content: '답변을 거절했습니다.',
-            isRejected: true, // 거절 상태로 생성
-          }),
-        }
-      );
-      const newAnswer = await response.json();
-      setQuestions((prev) =>
-        prev.map((q) => (q.id === id ? { ...q, answer: newAnswer } : q))
-      );
+      try {
+        setIsLoading(true); // 로딩 시작
+        const response = await fetch(
+          `https://openmind-api.vercel.app/${TEAM_ID}/questions/${question.id}/answers/`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: '답변을 거절했습니다.',
+              isRejected: true, // 거절 상태로 생성
+            }),
+          }
+        );
+        if (!response.ok) throw new Error('답변 거절 실패');
+        const newAnswer = await response.json();
+        setQuestions((prev) =>
+          prev.map((q) => (q.id === id ? { ...q, answer: newAnswer } : q))
+        );
+      } catch (error) {
+        console.error('에러가 발생했습니다.', error);
+      } finally {
+        setIsLoading(false); // 로딩 종료
+      }
       return;
     }
     const answerId = question.answer.id;
     try {
+      setIsLoading(true); // 로딩 시작
       const response = await fetch(
         `https://openmind-api.vercel.app/${TEAM_ID}/answers/${answerId}/`,
         {
@@ -582,6 +630,8 @@ export default function AnswerPage() {
       setEditingCards((prev) => ({ ...prev, [id]: false }));
     } catch (error) {
       console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
@@ -608,6 +658,11 @@ export default function AnswerPage() {
           <img src={MessageIcon} alt="메시지 아이콘" />
           <p>{questions.length}개의 질문이 있습니다</p>
         </CardBoxHeader>
+        {questions.length === 0 && (
+          <EmptyBox>
+            <img src={EmptyIcon} alt="질문이 없습니다." />
+          </EmptyBox>
+        )}
         {questions.map((question) => {
           return (
             <Card key={question.id}>

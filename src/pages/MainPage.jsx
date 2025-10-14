@@ -6,6 +6,7 @@ import illustrationImage from '../assets/image/v872batch5-nunny-04.png';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import FilledBtn from '../components/ButtonBox/FilledBtn';
 import InputField from '../components/InputField/InputField';
+import { useLoading } from '../components/Loading/Loading';
 
 const PageContainer = styled.div`
   background-image: url(${illustrationImage});
@@ -63,42 +64,40 @@ function MainPage() {
   const [name, setName] = useState('');
   const navigate = useNavigate();
 
+  const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
+
   const handleInputChange = (e) => {
     setName(e.target.value);
   };
 
   const handleSubmit = async (e) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
     e.preventDefault();
-
     if (!name.trim()) return;
-
     try {
-      const response = await fetch('https://openmind-api.vercel.app/19-1/subjects/', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          name: name.trim() 
-        }),
-      });
-
+      setIsLoading(true); // 로딩 시작
+      const response = await fetch(
+        'https://openmind-api.vercel.app/19-1/subjects/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim() }),
+        }
+      );
       if (!response.ok) {
         throw new Error('계정 생성에 실패했습니다.');
       }
 
       const data = await response.json();
-
       localStorage.setItem('userId', data.id);
-
       navigate(`/post/${data.id}/answer`);
-      
     } catch (error) {
-      console.error('계정 생성 오류:', error);
+      console.error(error);
       alert('계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
-
   const handleGoToAsk = () => {
     navigate('/list');
   };
