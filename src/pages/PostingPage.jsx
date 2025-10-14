@@ -311,9 +311,17 @@ function PostingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
-  const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
+  const [clickedLikes, setClickedLikes] = useState(() => {
+    const likes = localStorage.getItem('clickedLikes');
+    return likes ? JSON.parse(likes) : [];
+  });
+  const [clickedDislikes, setClickedDislikes] = useState(() => {
+    const dislikes = localStorage.getItem('clickedDislikes');
+    return dislikes ? JSON.parse(dislikes) : [];
+  });
 
   const { id } = useParams();
+  const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
   const currentCopyUrl = window.location.href;
 
   // 카카오 SDK 초기화
@@ -340,6 +348,7 @@ function PostingPage() {
         }
 
         const user = await userResponse.json();
+        console.log('받아온 user 데이터:', user);
         setUser(user);
 
         await fetchQuestionList();
@@ -402,6 +411,107 @@ function PostingPage() {
       setIsLoading(false); // 로딩 종료
     }
   }
+
+  const handleLike = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
+    const targetQuestion = question.find((q) => q.id === id);
+    if (!targetQuestion) return;
+    if (clickedDislikes.includes(id)) return; // 싫어요 누른 상태에서 좋아요 못누르게
+    if (clickedLikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
+
+    const questionId = targetQuestion.id;
+
+    try {
+      setIsLoading(true); // 로딩 시작
+      const response = await fetch(
+        `https://openmind-api.vercel.app/19-1/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'like',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('좋아요 등록 실패');
+
+      setQuestion((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+              ...q,
+              like: q.like + 1,
+            }
+            : q
+        )
+      );
+      setClickedLikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedLikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
+  };
+
+  // 싫어요 기능 함수
+  const handleDislike = async (id) => {
+    if (isLoading) return; // 로딩 중이면 함수 종료
+    const targetQuestion = question.find((q) => q.id === id);
+    if (!targetQuestion) return;
+    if (clickedLikes.includes(id)) return; // 좋아요 누른 상태에서 싫어요 못누르게
+    if (clickedDislikes.includes(id)) return; // 이미 클릭한 경우 다시 클릭 안되게
+
+    const questionId = targetQuestion.id;
+
+    try {
+      setIsLoading(true); // 로딩 시작
+      const response = await fetch(
+        `https://openmind-api.vercel.app/19-1/questions/${questionId}/reaction/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'dislike',
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('싫어요 등록 실패');
+
+      setQuestion((prev) =>
+        prev.map((q) =>
+          q.id === id
+            ? {
+              ...q,
+              dislike: q.dislike + 1,
+            }
+            : q
+        )
+      );
+      setClickedDislikes((prev) => {
+        if (!prev.includes(id)) {
+          const updated = [...prev, id];
+          localStorage.setItem('clickedDislikes', JSON.stringify(updated));
+          return updated;
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('에러가 발생했습니다.', error);
+    } finally {
+      setIsLoading(false); // 로딩 종료
+    }
+  };
 
   // URL 공유하기
   async function handleCopyUrl() {
@@ -538,7 +648,14 @@ function PostingPage() {
                       </AnswerRight>
                     </AnswerFeed>
                   ))}
-                <Reaction />
+                <Reaction
+                  likeCount={q.like}
+                  onLike={() => handleLike(q.id)}
+                  dislikeCount={q.dislike}
+                  onDislike={() => handleDislike(q.id)}
+                  isClickedLike={clickedLikes.includes(q.id)}
+                  isClickedDislike={clickedDislikes.includes(q.id)}
+                />
               </FeedCard>
             ))}
           </PostingArea>
