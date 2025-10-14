@@ -174,8 +174,6 @@ function ListPage() {
 
   const fetchSubjects = useCallback(async () => {
     try {
-      setIsLoading(true);
-
       const offset = (currentPage - 1) * ITEMS_PER_PAGE;
       const response = await fetch(
         `${API_BASE_URL}/subjects/?limit=${ITEMS_PER_PAGE}&offset=${offset}`
@@ -193,8 +191,6 @@ function ListPage() {
     } catch (error) {
       console.error('Error fetching subjects:', error);
       setSubjects([]);
-    } finally {
-      setIsLoading(false);
     }
   }, [currentPage, selectedOption, setIsLoading]);
 

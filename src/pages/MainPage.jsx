@@ -5,6 +5,7 @@ import illustrationImage from '../assets/image/v872batch5-nunny-04.png';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import FilledBtn from '../components/ButtonBox/FilledBtn';
 import InputField from '../components/InputField/InputField';
+import { useLoading } from '../components/Loading/Loading';
 
 const PageContainer = styled.div`
   background-image: url(${illustrationImage});
@@ -103,6 +104,7 @@ const MainForm = styled.form`
 
 function MainPage() {
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,6 +113,8 @@ function MainPage() {
     const name = formData.get('name');
 
     if (!name?.trim()) return;
+
+    setIsLoading(true);
 
     try {
       const response = await fetch('https://openmind-api.vercel.app/19-1/subjects/', {
@@ -136,6 +140,8 @@ function MainPage() {
     } catch (error) {
       console.error('계정 생성 오류:', error);
       alert('계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
