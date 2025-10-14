@@ -410,7 +410,7 @@ function PostingPage() {
   }
 
   // 카카오톡 공유하기
-  function shareKakao() {
+  function handleShareKakao() {
     if (!window.Kakao) {
       alert('카카오톡 공유 기능을 불러오는 중입니다.');
       return;
@@ -431,12 +431,18 @@ function PostingPage() {
         {
           title: '질문하러 가기',
           link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
+            mobileWebUrl: currentCopyUrl,
+            webUrl: currentCopyUrl,
           },
         },
       ],
     });
+  }
+
+  function handleShareFacebook() {
+    const shareUrl =
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentCopyUrl)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
   }
 
   if (loading) {
@@ -463,8 +469,8 @@ function PostingPage() {
           </ProfileUsername>
           <ShareIconArea>
             <img src={linkIcon} onClick={handleCopyUrl} alt="링크 URL 공유 아이콘" />
-            <img src={facebookIcon} alt="페이스북 공유 아이콘" />
-            <img src={kakaoIcon} onClick={shareKakao} alt="카카오톡 공유 아이콘" />
+            <img src={facebookIcon} onClick={handleShareFacebook} alt="페이스북 공유 아이콘" />
+            <img src={kakaoIcon} onClick={handleShareKakao} alt="카카오톡 공유 아이콘" />
           </ShareIconArea>
         </ProfileArea>
       </PostingHeader>
