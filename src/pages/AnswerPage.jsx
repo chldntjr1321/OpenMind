@@ -15,6 +15,7 @@ import FilledBtn from '../components/ButtonBox/FilledBtn';
 import ReactionBtns from '../components/Reaction/Reaction';
 import { FloatingButton } from '../components/FloatingBtn/FloatingBtn';
 import Edit from '../components/Edit/Edit';
+import Toast from '../components/Toast/Toast';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useLoading } from '../components/Loading/Loading';
@@ -226,6 +227,8 @@ export default function AnswerPage() {
   const [openCardId, setOpenCardId] = useState(null);
   const [editingCards, setEditingCards] = useState({});
   const [deletingCards, setDeletingCards] = useState({});
+  const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState('');
   // state에 함수를 넣으면 복잡한 계산을 매 렌더링마다 하지 않아도 된다고 합니다~!
   const [clickedLikes, setClickedLikes] = useState(() => {
     const likes = localStorage.getItem('clickedLikes');
@@ -237,6 +240,7 @@ export default function AnswerPage() {
   });
   const { id } = useParams();
   const { isLoading, setIsLoading } = useLoading(); // 로딩 상태를 제어하는 함수
+  const currentCopyUrl = window.location.href;
 
   useEffect(() => {
     async function fetchUserData() {
@@ -498,9 +502,9 @@ export default function AnswerPage() {
         prev.map((q) =>
           q.id === id
             ? {
-                ...q,
-                like: q.like + 1,
-              }
+              ...q,
+              like: q.like + 1,
+            }
             : q
         )
       );
@@ -548,9 +552,9 @@ export default function AnswerPage() {
         prev.map((q) =>
           q.id === id
             ? {
-                ...q,
-                dislike: q.dislike + 1,
-              }
+              ...q,
+              dislike: q.dislike + 1,
+            }
             : q
         )
       );
@@ -635,6 +639,19 @@ export default function AnswerPage() {
     }
   };
 
+  // URL 공유하기
+  async function handleCopyUrl() {
+    try {
+      await navigator.clipboard.writeText(currentCopyUrl);
+      setMessage('URL이 복사되었습니다');
+    } catch {
+      setMessage('복사에 실패하였습니다');
+    } finally {
+      setVisible(true);
+      setTimeout(() => setVisible(false), 5000);
+    }
+  }
+
   return (
     <>
       <Banner>
@@ -646,7 +663,7 @@ export default function AnswerPage() {
             <img src={ProfileImg} alt="프로필 이미지" />
             <p>{user ? user.name : '닉네임 불러오는 중..'}</p>
             <IconBox>
-              <img src={ShareURLIcon} alt="링크URL 공유 아이콘" />
+              <img src={ShareURLIcon} onClick={handleCopyUrl} alt="링크URL 공유 아이콘" />
               <img src={ShareKakaoIcon} alt="카카오톡 공유 아이콘" />
               <img src={ShareFacebookIcon} alt="페이스북 공유 아이콘" />
             </IconBox>
@@ -727,6 +744,7 @@ export default function AnswerPage() {
             삭제하기
           </DeleteAllBtn>
         )}
+        <Toast message={message} visible={visible} />
       </CardBox>
     </>
   );
