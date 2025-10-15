@@ -559,6 +559,7 @@ function PostingPage() {
     });
   }
 
+  // 페이스북 공유하기
   function handleShareFacebook() {
     const shareUrl =
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentCopyUrl)}`;
