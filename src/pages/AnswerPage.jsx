@@ -697,10 +697,6 @@ export default function AnswerPage() {
     window.open(shareUrl, '_blank', 'width=600,height=400');
   }
 
-  if (!user) {
-    return <div>데이터를 불러올 수 없습니다</div>;
-  }
-
   return (
     <>
       <Banner>
