@@ -186,11 +186,18 @@ function ListPage() {
       const data = await response.json();
       setTotalCount(data.count);
 
+      const calculatedTotalPages = Math.ceil(data.count / ITEMS_PER_PAGE);
+      if (currentPage > calculatedTotalPages && calculatedTotalPages > 0) {
+        setSearchParams({ sort: selectedOption, page: '1' });
+        return;
+      }      
+
       const sortedResults = sortSubjects(data.results || [], selectedOption);
       setSubjects(sortedResults);
     } catch (error) {
       console.error('Error fetching subjects:', error);
       setSubjects([]);
+      setSearchParams({ sort: selectedOption, page: '1' });
     }
   }, [currentPage, selectedOption, setIsLoading]);
 
