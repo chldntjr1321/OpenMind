@@ -5,6 +5,7 @@ import illustrationImage from '../assets/image/v872batch5-nunny-04.png';
 import OutlineBtn from '../components/ButtonBox/OutlineBtn';
 import FilledBtn from '../components/ButtonBox/FilledBtn';
 import InputField from '../components/InputField/InputField';
+import { useLoading } from '../components/Loading/Loading';
 
 const PageContainer = styled.div`
   background-image: url(${illustrationImage});
@@ -12,19 +13,47 @@ const PageContainer = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
-
   height: 100vh;
   position: relative;
+
+  @media (max-width: 1199px) {  
+    background-size: contain; 
+    background-position: bottom; 
+  }
+
+  @media (max-width: 767px) {
+    background-size: contain;
+    background-position: bottom;
+  }
 `;
 
 const Header = styled.header`
   padding: 45px 130px 0;
   text-align: right;
+
+  @media (max-width: 1199px) {
+    padding: 40px 50px 0;
+  }
+
+  @media (max-width: 767px) {
+    display: none;
+`;
+
+const MobileButtonBox = styled.div`
+  display: none;
+
+  @media (max-width: 767px) {
+    display: block;
+  }
 `;
 
 const ButtonBox = styled.div`
   display: inline-block;
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    padding-top: 80px;
+    gap: 16px;
 `;
 
 const MainContainer = styled.main`
@@ -37,11 +66,25 @@ const MainContainer = styled.main`
   gap: 24px;
   position: relative;
   z-index: 2;
+
+  @media (max-width: 1199px) {
+    padding-top: 70px;  
+  }
+
+  @media (max-width: 767px) {
+    padding-top: 80px;
+    gap: 16px;
+  }
 `;
 
 const Logo = styled.img`
   width: auto;
   height: auto;
+
+  @media (max-width: 767px) {
+    max-width: 248px;
+    height: auto;
+  }
 `;
 
 const MainForm = styled.form`
@@ -52,10 +95,16 @@ const MainForm = styled.form`
   gap: 16px;
   border-radius: 16px;
   background: #ffffff;
+
+  @media (max-width: 767px) {
+    width: 327px;
+    padding: 24px;
+  }
 `;
 
 function MainPage() {
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,6 +113,8 @@ function MainPage() {
     const name = formData.get('name');
 
     if (!name?.trim()) return;
+
+    setIsLoading(true);
 
     try {
       const response = await fetch('https://openmind-api.vercel.app/19-1/subjects/', {
@@ -89,6 +140,8 @@ function MainPage() {
     } catch (error) {
       console.error('계정 생성 오류:', error);
       alert('계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -108,6 +161,10 @@ function MainPage() {
         <div>
           <Logo src={logoImage} alt="OpenMind 로고" />
         </div>
+
+        <MobileButtonBox onClick={handleGoToAsk}>
+          <OutlineBtn btnText="질문하러 가기" />
+        </MobileButtonBox>
 
         <MainForm onSubmit={handleSubmit}>
           <InputField name="name" />
